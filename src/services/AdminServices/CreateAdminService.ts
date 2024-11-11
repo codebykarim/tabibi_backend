@@ -73,11 +73,11 @@ const CreateAdminService = async ({
     user_metadata: { id: admin.id },
   });
 
-  const newToken = updateTokenExpiry(data!.session!.access_token, admin.id);
+  const token = updateTokenExpiry(data!.session!.access_token, admin.id);
 
   return {
     admin,
-    token: newToken,
+    token: token,
   };
 };
 
