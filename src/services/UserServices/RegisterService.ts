@@ -54,7 +54,6 @@ const RegisterService = async (
       },
     })
     .catch(async (e) => {
-      console.log(e);
       await supabase.auth.admin.deleteUser(data!.user!.id);
       throw new AppError("Couldn't create your account", 404);
     });
@@ -62,7 +61,7 @@ const RegisterService = async (
   await supabase.auth.admin.updateUserById(data!.user!.id, {
     user_metadata: { id: user.id },
   });
-  console.log(user);
+
   return {
     user,
   };

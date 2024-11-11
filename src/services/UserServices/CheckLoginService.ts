@@ -14,7 +14,6 @@ const CheckLoginService = async (identitynumber: string): Promise<Response> => {
       },
     })
     .catch((e) => {
-      console.log(e);
       throw new AppError("Sorry Something went wrong");
     });
 

@@ -28,7 +28,7 @@ export const checkLogin = async (
 export const login = async (req: Request, res: Response, body?: any) => {
   const { identitynumber, password } =
     body ?? (req.body as { identitynumber?: string; password?: string });
-  console.log(identitynumber, password);
+
   if (!identitynumber || !password) {
     throw new AppError("Please Provide Identity Number and Password", 400);
   }
