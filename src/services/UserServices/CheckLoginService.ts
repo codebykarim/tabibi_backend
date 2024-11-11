@@ -1,12 +1,16 @@
+import { User } from "@prisma/client";
 import AppError from "../../errors/AppError";
 import prisma from "../../prisma";
 
-const CheckLoginService = async (identitynumber: string): Promise<void> => {
+interface Response {
+  user: User;
+}
+
+const CheckLoginService = async (identitynumber: string): Promise<Response> => {
   const user = await prisma.user
     .findFirst({
       where: {
         identitynumber: identitynumber,
-        isverified: true,
       },
     })
     .catch((e) => {
@@ -22,7 +26,9 @@ const CheckLoginService = async (identitynumber: string): Promise<void> => {
     throw new AppError("Sorry your account is not verified yet");
   }
 
-  return;
+  return {
+    user,
+  };
 };
 
 export default CheckLoginService;
