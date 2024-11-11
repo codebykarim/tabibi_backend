@@ -6,18 +6,18 @@ import AppError from "../../errors/AppError";
 
 interface Response {
   user: User;
-  token: string;
 }
 
 const RegisterService = async (
   identitynumber: string,
   name: string,
   phone: string,
-  village: string
+  villageId: number
 ): Promise<Response> => {
   const userWithSameIdentity = await prisma.user.findFirst({
     where: {
       identitynumber: identitynumber,
+      phone: phone,
     },
   });
 
@@ -45,24 +45,26 @@ const RegisterService = async (
         email: `${identitynumber}@tabibi.com`,
         identitynumber: identitynumber,
         phone: phone,
-        village: village,
+        village: {
+          connect: {
+            id: Number(villageId),
+          },
+        },
         name,
       },
     })
     .catch(async (e) => {
+      console.log(e);
       await supabase.auth.admin.deleteUser(data!.user!.id);
-      throw new AppError("ERR_ADMIN_CREATE", 404);
+      throw new AppError("Couldn't create your account", 404);
     });
 
   await supabase.auth.admin.updateUserById(data!.user!.id, {
     user_metadata: { id: user.id },
   });
-
-  const newToken = updateTokenExpiry(data!.session!.access_token, user.id);
-
+  console.log(user);
   return {
     user,
-    token: newToken,
   };
 };
 
