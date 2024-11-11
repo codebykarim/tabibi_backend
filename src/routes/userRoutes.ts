@@ -2,6 +2,7 @@ import { Router } from "express";
 import { MethodInfo } from "../interfaces";
 import * as UserController from "../controllers/UserController";
 import { init } from "../utils/methods";
+import isAuth from "../middleware/isAuth";
 
 const userRoutes = Router();
 
@@ -17,6 +18,15 @@ const userMethods: { [key: string]: MethodInfo } = {
   register: {
     controllerFunction: UserController.register,
     httpMethod: "post",
+  },
+  "change-password": {
+    controllerFunction: UserController.changePasswordFirstTime,
+    httpMethod: "put",
+  },
+  me: {
+    controllerFunction: UserController.getMe,
+    httpMethod: "get",
+    authFunction: isAuth,
   },
 };
 
