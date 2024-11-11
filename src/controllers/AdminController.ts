@@ -66,13 +66,7 @@ export const getMe = async (
   res: Response,
   body?: any
 ): Promise<Response> => {
-  const { id } = body ?? (req.body as { id?: number });
-
-  if (!id) {
-    throw new AppError("MISSING_DETAILS", 400);
-  }
-
-  const admin = await GetAdminService(id);
+  const admin = await GetAdminService(Number(req.user.id));
 
   return controllerReturn(admin, req, res);
 };
