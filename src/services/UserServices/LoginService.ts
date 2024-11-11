@@ -39,7 +39,7 @@ const LoginService = async (
 
   if (error) throw new AppError("Sorry your password is incorrect", 400);
 
-  const newToken = updateTokenExpiry(data!.session!.access_token, user.id);
+  const token = updateTokenExpiry(data!.session!.access_token, user.id);
 
   if (!user.changedPassword) {
     return {
@@ -49,7 +49,7 @@ const LoginService = async (
 
   return {
     user,
-    token: newToken,
+    token: token,
   };
 };
 
