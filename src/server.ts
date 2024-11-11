@@ -47,6 +47,8 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   errorMeta.code = 500;
   errorMeta.message = err.message;
 
+  console.log(errorMeta);
+
   // LogError(errorMeta);
 
   return res.status(500).json({ error: errorMeta.key });
