@@ -6,6 +6,7 @@ import { AdminRole } from "@prisma/client";
 import CreateAdminService from "../services/AdminServices/CreateAdminService";
 import GetAdminService from "../services/AdminServices/GetAdminService";
 import VerifyUserService from "../services/AdminServices/VerifyUserService";
+import LoginAdminService from "../services/AdminServices/LoginAdminService";
 
 type Adminfilter = {
   email?: string;
@@ -20,6 +21,22 @@ type Adminfilter = {
   searchParam: string;
   permissions: Permissions[];
   pageNumber: string;
+};
+
+export const login = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { email, password } = body ?? (req.body as Adminfilter);
+
+  if (!email || !password) {
+    throw new AppError("MISSING_DETAILS", 400);
+  }
+
+  const admin = await LoginAdminService(email, password);
+
+  return controllerReturn(admin, req, res);
 };
 
 export const createAdmin = async (

@@ -7,6 +7,10 @@ import isAuth from "../middleware/isAuth";
 const adminRoutes = Router();
 
 const adminMethods: { [key: string]: MethodInfo } = {
+  login: {
+    controllerFunction: AdminController.login,
+    httpMethod: "post",
+  },
   create: {
     controllerFunction: AdminController.createAdmin,
     httpMethod: "post",

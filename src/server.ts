@@ -10,6 +10,7 @@ const { json } = pkg;
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { ErrorMeta } from "./utils/logger";
+import { initializeScheduledNotifications } from "./utils/schedule";
 // import { LogError, ErrorMeta } from "./utils/logger";
 
 const app = express();
@@ -55,5 +56,7 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
 });
 
 app.listen(process.env.PORT || 8000, () => {
+  initializeScheduledNotifications();
+
   console.log(`Server started on port: ${process.env.PORT}`);
 });

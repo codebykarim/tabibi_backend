@@ -8,6 +8,7 @@ import LoginService from "../services/UserServices/LoginService";
 import RegisterService from "../services/UserServices/RegisterService";
 import ChangePasswordService from "../services/UserServices/ChangePasswordService";
 import GetUserService from "../services/UserServices/GetUserService";
+import UpdateUserService from "../services/UserServices/UpdateUserService";
 
 export const checkLogin = async (
   req: Request,
@@ -89,6 +90,21 @@ export const getMe = async (
   body?: any
 ): Promise<Response> => {
   const admin = await GetUserService(Number(req.user.id));
+
+  return controllerReturn(admin, req, res);
+};
+
+export const updateMe = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { fcmToken } =
+    body ??
+    (req.body as {
+      fcmToken?: string;
+    });
+  const admin = await UpdateUserService(Number(req.user.id), fcmToken);
 
   return controllerReturn(admin, req, res);
 };

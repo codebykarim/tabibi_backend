@@ -28,6 +28,11 @@ const userMethods: { [key: string]: MethodInfo } = {
     httpMethod: "get",
     authFunction: isAuth,
   },
+  "update-me": {
+    controllerFunction: UserController.updateMe,
+    httpMethod: "put",
+    authFunction: isAuth,
+  },
 };
 
 const mapedMethods = init(userMethods);
