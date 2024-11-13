@@ -15,6 +15,7 @@ const GetMyNotificationsService = async (
   const notifications = await prisma.notification.findMany({
     where: {
       userId: userId,
+      status: "SENT",
       ...(onlyUnread && { read: false }),
     },
     orderBy: {
