@@ -1,8 +1,5 @@
+import { Notification } from "@prisma/client";
 import prisma from "../../prisma";
-
-interface Notification {
-  // Define the Notification interface based on your Prisma schema
-}
 
 interface NotificationResponse {
   notifications: Notification[];
