@@ -97,8 +97,8 @@ export const executeGpt = async (
     const response = await client.chat.completions.create({
       model: "gpt-3.5-turbo", // use GPT-3.5 to save on cost
       messages,
-      max_tokens: 50, // limit to encourage shorter answers
-      temperature: 0.3, // reduce the randomness of the output
+      max_tokens: 200, // limit to encourage shorter answers
+      temperature: 0.5, // reduce the randomness of the output
     });
 
     return response;
