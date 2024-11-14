@@ -95,8 +95,10 @@ export const executeGpt = async (
 
     // Send the updated conversation history to OpenAI for completion
     const response = await client.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo", // use GPT-3.5 to save on cost
       messages,
+      max_tokens: 50, // limit to encourage shorter answers
+      temperature: 0.3, // reduce the randomness of the output
     });
 
     return response;
