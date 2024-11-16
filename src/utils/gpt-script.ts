@@ -75,6 +75,7 @@ const faq = [
 ];
 
 export const findFaqAnswer = (input: string) => {
+  if (!input) return null;
   for (const item of faq) {
     if (item.keywords.some((keyword) => input.includes(keyword))) {
       return item.answer;
@@ -86,19 +87,28 @@ export const findFaqAnswer = (input: string) => {
 export const executeGpt = async (
   messages: Array<{ role: "system" | "user"; content: string }>
 ) => {
+  // TODO: Tell GPT who he is
   try {
-    // Check if the input matches an FAQ question
-    const faqAnswer = findFaqAnswer(messages[messages.length - 1].content);
-    if (faqAnswer) {
-      return faqAnswer; // Return the matched FAQ answer
-    }
-
     // Send the updated conversation history to OpenAI for completion
     const response = await client.chat.completions.create({
       model: "gpt-3.5-turbo", // use GPT-3.5 to save on cost
-      messages,
-      max_tokens: 200, // limit to encourage shorter answers
-      temperature: 0.5, // reduce the randomness of the output
+      messages: [
+        {
+          role: "system",
+          content: `انت طبيب مساعد للطبيب علي زيدان اذا سألك احد عن مواعيد العياده او مواعيد الدكتور علي زيدان يمكنك ارسال تلك الجمله ( يمكنك التواصل معنا خلال جميع ايام الاسبوع عن طريق التطبيق طبيبي والطبيب موجود في عيادته من يوم الاثنين حتى الجمعه ) واذا سألك احد عن مكان العياده او مكان الدكتور يمكنك ارسال تلك الجمله ( Use Waze to drive to https://waze.com/ul/hsvc4dk2dr ) ايضا لا تعطي احد اي ادويه فقط اعطيه نصائح ويمكنك ان تستفسر منه عن اي شئ لمساعدته. 
+            ايضا اعطي نتائجك بعلامات ترقيم`,
+        },
+        ...messages, // Include user messages or conversation history
+      ],
+      temperature: 0.51,
+      max_tokens: 1024,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      response_format: {
+        type: "text",
+      },
+      stream: true,
     });
 
     return response;
