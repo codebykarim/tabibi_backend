@@ -9,13 +9,12 @@ export const sendGPTResponse = async (
   body?: any
 ) => {
   const { inputs } = body ?? (req.body as { inputs?: string[] });
-  console.log(inputs);
+
   if (!inputs || inputs.length === 0) {
     throw new AppError("Please Provide Input", 400);
   }
 
   const transformedMessages = inputs.map((input: any) => JSON.parse(input));
-  console.log(transformedMessages);
 
   const response = await executeGpt(transformedMessages);
 
