@@ -17,14 +17,14 @@ const formMethods: { [key: string]: MethodInfo } = {
     controllerFunction: FormController.createMedicalCasesForm,
     httpMethod: "post",
   },
-  "papers-form": {
-    authFunction: isAuth,
-    controllerFunction: FormController.createPapersForm,
-    httpMethod: "get",
-  },
   "prescription-form": {
     authFunction: isAuth,
     controllerFunction: FormController.createPrescriptionForm,
+    httpMethod: "post",
+  },
+  "papers-form": {
+    authFunction: isAuth,
+    controllerFunction: FormController.createPapersForm,
     httpMethod: "post",
   },
 };

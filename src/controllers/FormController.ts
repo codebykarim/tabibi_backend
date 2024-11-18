@@ -4,28 +4,40 @@ import controllerReturn from "../utils/successReturn";
 import CreateForm from "../services/FormServices/createFormService";
 import { FormType } from "@prisma/client";
 
+import { uploadImages } from "../utils/uploadImages";
+
 export const createAskDoctorForm = async (
   req: Request,
   res: Response,
   body?: any
 ) => {
-  const { howToHelp, media } =
-    body ?? (req.body as { howToHelp?: string; media?: string[] });
+  const { howToHelp } = body ?? (req.body as { howToHelp?: string });
 
   if (!howToHelp) {
     throw new AppError("Please Provide Input", 400);
   }
 
-  const form = await CreateForm({
+  // Process uploaded files
+  const media = (req.files as Express.Multer.File[])?.map((file) => {
+    return {
+      fileName: `${Date.now()}-${file.originalname}`,
+      fileBuffer: file.buffer,
+      mimeType: file.mimetype,
+    };
+  });
+
+  const urls = (await uploadImages(media)).filter((url) => url !== null);
+
+  await CreateForm({
     type: FormType.ASK_DOCTOR,
     formData: {
       howToHelp,
-      media: media.join(","),
+      media: urls,
       userId: Number(req.user?.id),
     },
   });
 
-  return controllerReturn(form, req, res);
+  return controllerReturn({ success: true }, req, res);
 };
 
 export const createMedicalCasesForm = async (
@@ -42,7 +54,6 @@ export const createMedicalCasesForm = async (
     currentHeartBeat,
     currentOxygen,
     currentBloodPressure,
-    media,
   } =
     body ??
     (req.body as {
@@ -54,13 +65,24 @@ export const createMedicalCasesForm = async (
       currentHeartBeat?: string;
       currentOxygen?: string;
       currentBloodPressure?: string;
-      media?: string[];
     });
 
   if (!symptoms) {
     throw new AppError("Please Provide Input", 400);
   }
-  const form = await CreateForm({
+
+  // Process uploaded files
+  const media = (req.files as Express.Multer.File[])?.map((file) => {
+    return {
+      fileName: `${Date.now()}-${file.originalname}`,
+      fileBuffer: file.buffer,
+      mimeType: file.mimetype,
+    };
+  });
+
+  const urls = (await uploadImages(media)).filter((url) => url !== null);
+
+  await CreateForm({
     type: FormType.MEDICAL_CASES,
     formData: {
       symptoms,
@@ -71,11 +93,12 @@ export const createMedicalCasesForm = async (
       currentHeartBeat,
       currentOxygen,
       currentBloodPressure,
-      media,
+      media: urls,
       userId: Number(req.user?.id),
     },
   });
-  return controllerReturn(form, req, res);
+
+  return controllerReturn({ success: true }, req, res);
 };
 
 export const createPrescriptionForm = async (
@@ -83,31 +106,41 @@ export const createPrescriptionForm = async (
   res: Response,
   body?: any
 ) => {
-  const { medicine, medicineReason, medicineRenew, media } =
+  const { medicine, medicineReason, medicineRenew } =
     body ??
     (req.body as {
       medicine?: string;
       medicineReason?: string;
       medicineRenew?: boolean;
-      media?: string[];
     });
 
   if (!medicine) {
     throw new AppError("Please Provide Input", 400);
   }
 
-  const form = await CreateForm({
-    type: FormType.ASK_DOCTOR,
+  // Process uploaded files
+  const media = (req.files as Express.Multer.File[])?.map((file) => {
+    return {
+      fileName: `${Date.now()}-${file.originalname}`,
+      fileBuffer: file.buffer,
+      mimeType: file.mimetype,
+    };
+  });
+
+  const urls = (await uploadImages(media)).filter((url) => url !== null);
+
+  await CreateForm({
+    type: FormType.PRESCRIPTION,
     formData: {
       medicine,
       medicineReason,
-      medicineRenew,
-      media: media.join(","),
+      medicineRenew: medicineRenew == "true",
+      media: urls,
       userId: Number(req.user?.id),
     },
   });
 
-  return controllerReturn(form, req, res);
+  return controllerReturn({ success: true }, req, res);
 };
 
 export const createPapersForm = async (
@@ -126,8 +159,8 @@ export const createPapersForm = async (
     throw new AppError("Please Provide Input", 400);
   }
 
-  const form = await CreateForm({
-    type: FormType.ASK_DOCTOR,
+  await CreateForm({
+    type: FormType.PAPERS,
     formData: {
       requiredPapers,
       notes,
@@ -135,5 +168,5 @@ export const createPapersForm = async (
     },
   });
 
-  return controllerReturn(form, req, res);
+  return controllerReturn({ success: true }, req, res);
 };
