@@ -98,26 +98,30 @@ model Request {
 }
 
 model Form {
-  id                  Int      @id @unique @default(autoincrement())
-  type                FormType
-  symptoms            String?
-  howToHelp           String?
-  medication          String?
-  requestedPapers     String?
-  media               String[]
-  duration            String?
-  intensity           String?
-  otherSymptoms       String?
-  currentTemperature  String?
-  currentHeartBeat    String?
-  oxgyenLevel         String?
-  bloodPressure       String?
-  theMedicationReason String?
-  medicineRenew       Boolean?
-  notes               String?
-  user                User?    @relation(fields: [userId], references: [id])
-  userId              Int?
-  createdAt           DateTime @default(now())
+  id                   Int      @id @unique @default(autoincrement())
+  type                 FormType
+  symptoms             String? // MEDICAL_CASES
+  startOfSymptoms      String? // MEDICAL_CASES
+  intensityOfSymptoms  String? // MEDICAL_CASES
+  otherSymptoms        String? // MEDICAL_CASES
+  currentTemperature   String? // MEDICAL_CASES
+  currentHeartBeat     String? // MEDICAL_CASES
+  currentOxygen        String? // MEDICAL_CASES
+  currentBloodPressure String? // MEDICAL_CASES
+
+  medicine       String? // PRESCRIPTION
+  medicineReason String? // PRESCRIPTION
+  medicineRenew  Boolean? // PRESCRIPTION
+
+  requiredPapers String? // PAPERS
+  notes          String? // PAPERS
+
+  howToHelp String? // ASK_DOCTOR
+
+  media     String[] // All forms
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  createdAt DateTime @default(now())
 }
 
 model Village {

@@ -1,5 +1,6 @@
 import { User } from "@prisma/client";
 import prisma from "../../prisma";
+import AppError from "../../errors/AppError";
 
 interface Response {
   user: User;
@@ -16,7 +17,7 @@ const VerifyUserService = async (id: number): Promise<Response> => {
   });
 
   if (!user) {
-    throw new Error("USER_NOT_FOUND");
+    throw new AppError("USER_NOT_FOUND");
   }
 
   return {

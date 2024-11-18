@@ -1,0 +1,37 @@
+import { Form, FormType } from "@prisma/client";
+import prisma from "../../prisma";
+import AppError from "../../errors/AppError";
+
+interface CreateFormArgs {
+  type: FormType;
+  formData: Partial<Omit<Form, "id" | "type" | "createdAt">>; // Allow partial data
+}
+
+interface Response {
+  form: Form;
+}
+
+const CreateForm = async ({
+  type,
+  formData,
+}: CreateFormArgs): Promise<Response> => {
+  if (!type || !formData) {
+    throw new AppError("Please provide all required inputs", 400);
+  }
+
+  try {
+    const form = await prisma.form.create({
+      data: {
+        type,
+        ...formData,
+      },
+    });
+
+    return { form };
+  } catch (error) {
+    console.error("Error creating form:", error);
+    throw new AppError("Failed to create form. Please try again later.", 500);
+  }
+};
+
+export default CreateForm;

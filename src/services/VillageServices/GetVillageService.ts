@@ -1,5 +1,6 @@
 import { Village } from "@prisma/client";
 import prisma from "../../prisma";
+import AppError from "../../errors/AppError";
 
 interface Response {
   village: Village;
@@ -13,7 +14,7 @@ const GetVillageService = async (id: number): Promise<Response> => {
   });
 
   if (!village) {
-    throw new Error("Village not found");
+    throw new AppError("Village not found");
   }
 
   return {

@@ -1,5 +1,6 @@
 import { Notification } from "@prisma/client";
 import prisma from "../../prisma";
+import AppError from "../../errors/AppError";
 
 interface Response {
   success: boolean;
@@ -16,7 +17,7 @@ const ReadOneNotification = async (id: number): Promise<Response> => {
   });
 
   if (!notification) {
-    throw new Error("NOTIFICATION_NOT_FOUND");
+    throw new AppError("NOTIFICATION_NOT_FOUND");
   }
 
   return {
