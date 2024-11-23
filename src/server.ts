@@ -8,19 +8,10 @@ const { urlencoded } = pkg;
 const { json } = pkg;
 
 import AppError from "./errors/AppError";
+import routes from "./routes";
 import { ErrorMeta } from "./utils/logger";
 import { initializeScheduledNotifications } from "./utils/schedule";
-
-// Routes Import
-import userRoutes from "./routes/userRoutes";
-import adminRoutes from "./routes/adminRoutes";
-import villageRoutes from "./routes/villageRoutes";
-import notificationRoutes from "./routes/notificationRoutes";
-import gptRoutes from "./routes/gptRoutes";
-import formRoutes from "./routes/formRoutes";
-import { uploadMedia } from "./utils/multer";
-import * as UserController from "./controllers/UserController";
-import isAuth from "./middleware/isAuth";
+// import { LogError, ErrorMeta } from "./utils/logger";
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
@@ -29,25 +20,9 @@ app.use(cors());
 
 app.use(urlencoded({ extended: true }));
 app.use(json());
+app.set("trust proxy", true);
 
-userRoutes.post("/api/auth/users/check-login", UserController.checkLogin);
-userRoutes.post("/api/auth/users/login", UserController.login);
-userRoutes.post("/api/auth/users/register", UserController.register);
-userRoutes.put(
-  "/api/auth/users/change-password",
-  UserController.changePasswordFirstTime
-);
-userRoutes.get("/api/auth/users/me", isAuth, UserController.getMe);
-userRoutes.put("/api/auth/users/update-me", isAuth, UserController.updateMe);
-app.use("/api", adminRoutes);
-app.use("/api", villageRoutes);
-app.use("/api", notificationRoutes);
-app.use("/api", gptRoutes);
-app.use(
-  "/api",
-  uploadMedia, // Middleware to handle file uploads
-  formRoutes
-);
+app.use(routes);
 
 app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   let errorMeta: ErrorMeta = {
@@ -80,7 +55,7 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   return res.status(500).json({ error: errorMeta.key });
 });
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
