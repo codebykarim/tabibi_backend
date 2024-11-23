@@ -59,7 +59,9 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.listen(process.env.PORT || 3000, () => {
+const port = Number(process.env.PORT) ?? 3000;
+
+app.listen(port, "0.0.0.0", () => {
   initializeScheduledNotifications();
 
   console.log(`Server started on port: ${process.env.PORT}`);
