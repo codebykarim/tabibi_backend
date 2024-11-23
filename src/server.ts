@@ -19,6 +19,8 @@ import notificationRoutes from "./routes/notificationRoutes";
 import gptRoutes from "./routes/gptRoutes";
 import formRoutes from "./routes/formRoutes";
 import { uploadMedia } from "./utils/multer";
+import * as UserController from "./controllers/UserController";
+import isAuth from "./middleware/isAuth";
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
@@ -28,7 +30,15 @@ app.use(cors());
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
-app.use("/api", userRoutes);
+userRoutes.post("/api/auth/users/check-login", UserController.checkLogin);
+userRoutes.post("/api/auth/users/login", UserController.login);
+userRoutes.post("/api/auth/users/register", UserController.register);
+userRoutes.put(
+  "/api/auth/users/change-password",
+  UserController.changePasswordFirstTime
+);
+userRoutes.get("/api/auth/users/me", isAuth, UserController.getMe);
+userRoutes.put("/api/auth/users/update-me", isAuth, UserController.updateMe);
 app.use("/api", adminRoutes);
 app.use("/api", villageRoutes);
 app.use("/api", notificationRoutes);
