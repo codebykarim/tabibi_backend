@@ -21,40 +21,40 @@ app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-app.set("trust proxy", true);
+// app.set("trust proxy", true);
 
 app.use(routes);
 
-app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
-  let errorMeta: ErrorMeta = {
-    url: req.url,
-    body: req.body,
-    agent: req.headers["user-agent"],
-    key: "INTERNAL_SERVER_ERROR",
-    env: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
-  };
+// app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
+//   let errorMeta: ErrorMeta = {
+//     url: req.url,
+//     body: req.body,
+//     agent: req.headers["user-agent"],
+//     key: "INTERNAL_SERVER_ERROR",
+//     env: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
+//   };
 
-  if (req.user?.id !== undefined) {
-    errorMeta.uid = req.user.id;
-  }
+//   if (req.user?.id !== undefined) {
+//     errorMeta.uid = req.user.id;
+//   }
 
-  if (err instanceof AppError) {
-    errorMeta.code = err.statusCode;
-    errorMeta.key = err.message;
-    // LogError(errorMeta);
+//   if (err instanceof AppError) {
+//     errorMeta.code = err.statusCode;
+//     errorMeta.key = err.message;
+//     // LogError(errorMeta);
 
-    return res.status(err.statusCode).json({ error: err.message });
-  }
+//     return res.status(err.statusCode).json({ error: err.message });
+//   }
 
-  errorMeta.code = 500;
-  errorMeta.message = err.message;
+//   errorMeta.code = 500;
+//   errorMeta.message = err.message;
 
-  console.log(errorMeta);
+//   console.log(errorMeta);
 
-  // LogError(errorMeta);
+//   // LogError(errorMeta);
 
-  return res.status(500).json({ error: errorMeta.key });
-});
+//   return res.status(500).json({ error: errorMeta.key });
+// });
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
