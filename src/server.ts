@@ -18,8 +18,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 
-app.use(urlencoded({ extended: true }));
-app.use(json());
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 app.set("trust proxy", true);
 
 app.use(routes);
