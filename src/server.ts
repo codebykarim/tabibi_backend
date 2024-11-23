@@ -55,6 +55,10 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   return res.status(500).json({ error: errorMeta.key });
 });
 
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.listen(process.env.PORT || 8000, () => {
   initializeScheduledNotifications();
 
