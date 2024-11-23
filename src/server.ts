@@ -56,7 +56,7 @@ app.use(routes);
 //   return res.status(500).json({ error: errorMeta.key });
 // });
 
-app.get("/health", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
