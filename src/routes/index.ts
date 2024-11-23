@@ -6,6 +6,7 @@ import notificationRoutes from "./notificationRoutes";
 import gptRoutes from "./gptRoutes";
 import formRoutes from "./formRoutes";
 import { uploadMedia } from "../utils/multer";
+import whatsappRoutes from "./whatsappRoutes";
 
 const routes = Router();
 
@@ -19,5 +20,6 @@ routes.use(
   uploadMedia, // Middleware to handle file uploads
   formRoutes
 );
+routes.use("/api", whatsappRoutes);
 
 export default routes;

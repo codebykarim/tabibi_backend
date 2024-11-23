@@ -17,22 +17,27 @@ export const createAskDoctorForm = async (
     throw new AppError("Please Provide Input", 400);
   }
 
-  // Process uploaded files
-  const media = (req.files as Express.Multer.File[])?.map((file) => {
-    return {
-      fileName: `${Date.now()}-${file.originalname}`,
-      fileBuffer: file.buffer,
-      mimeType: file.mimetype,
-    };
-  });
+  let urls;
 
-  const urls = (await uploadImages(media)).filter((url) => url !== null);
+  // Process uploaded files
+  if (req.files) {
+    console.log(req.files);
+    const media = (req.files as Express.Multer.File[])?.map((file) => {
+      return {
+        fileName: `${Date.now()}-${file.originalname}`,
+        fileBuffer: file.buffer,
+        mimeType: file.mimetype,
+      };
+    });
+
+    urls = (await uploadImages(media)).filter((url) => url !== null);
+  }
 
   await CreateForm({
     type: FormType.ASK_DOCTOR,
     formData: {
       howToHelp,
-      media: urls,
+      media: urls ?? [],
       userId: Number(req.user?.id),
     },
   });
