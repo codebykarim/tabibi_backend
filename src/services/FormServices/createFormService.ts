@@ -28,7 +28,7 @@ const CreateForm = async ({
       },
     });
 
-    await SendMessageWhatsapp(formData.userId!, `${Date.now()} form created`);
+    await SendMessageWhatsapp(formData.userId!, "form created");
 
     return { form };
   } catch (error) {

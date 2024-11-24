@@ -6,7 +6,6 @@ import pkg from "body-parser";
 import path from "path";
 const { urlencoded } = pkg;
 const { json } = pkg;
-import WhatsAppService from "./utils/whatsapp";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { ErrorMeta } from "./utils/logger";

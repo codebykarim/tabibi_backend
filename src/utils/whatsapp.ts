@@ -1,108 +1,105 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
-import { unlinkSync, existsSync, rmSync, mkdirSync } from "fs";
+import { unlinkSync, existsSync } from "fs";
 
 class WhatsAppService {
   private client: Client | null = null;
+  private readonly sessionPath = "/whatsapp/tokens/whatsapp-session"; // Session folder
+  private readonly lockFile = `${this.sessionPath}/SingletonLock`;
 
   constructor() {
     this.initialize();
   }
 
   private async initialize(): Promise<void> {
-    const sessionPath = "/whatsapp/tokens/whatsapp-session"; // Session folder
-    const lockFile = `${sessionPath}/SingletonLock`;
-
-    // Check and remove the SingletonLock file if it exists
-    if (existsSync(lockFile)) {
-      try {
-        unlinkSync(lockFile); // Remove lock file to prevent errors
-        console.log("SingletonLock file removed successfully.");
-      } catch (err) {
-        console.error("Error removing SingletonLock file:", err);
-      }
-    }
-
-    // Initialize WhatsApp client using LocalAuth for session storage
-    this.client = new Client({
-      authStrategy: new LocalAuth({
-        clientId: "whatsapp-session", // Name for the session
-      }),
-      puppeteer: {
-        headless: true, // Headless mode for Docker
-        executablePath: "/usr/bin/chromium", // Pre-installed Chromium in Docker
-        args: [
-          "--no-sandbox", // Required for Docker
-          "--disable-setuid-sandbox", // Prevents permission errors
-          "--disable-dev-shm-usage", // Fixes shared memory crashes in Docker
-        ],
-      },
-    });
-
-    // Event listeners for client
-    this.client.on("ready", () => {
-      console.log("WhatsApp client is ready!");
-    });
-
-    this.client.on("authenticated", () => {
-      console.log("WhatsApp authenticated!");
-    });
-
-    this.client.on("disconnected", (reason) => {
-      console.log("WhatsApp client disconnected:", reason);
-    });
+    this.cleanUpLockFile();
+    this.createClient();
 
     try {
-      // Start client
-      await this.client.initialize();
-      console.log("WhatsApp initialized!");
+      await this.client?.initialize();
+      console.log("WhatsApp initialized successfully!");
     } catch (err) {
       console.error("Error initializing WhatsApp client:", err);
     }
   }
 
-  private async reconnectClient(): Promise<void> {
+  private cleanUpLockFile(): void {
+    if (existsSync(this.lockFile)) {
+      try {
+        unlinkSync(this.lockFile);
+        console.log("SingletonLock file removed successfully.");
+      } catch (err) {
+        console.error("Error removing SingletonLock file:", err);
+      }
+    }
+  }
+
+  private createClient(): void {
+    this.client = new Client({
+      authStrategy: new LocalAuth({ clientId: "whatsapp-session" }),
+      puppeteer: {
+        headless: true,
+        executablePath: "/usr/bin/chromium",
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+        ],
+      },
+    });
+
+    this.client.on("ready", () => console.log("WhatsApp client is ready!"));
+    this.client.on("authenticated", () =>
+      console.log("WhatsApp authenticated!")
+    );
+    this.client.on("disconnected", (reason) =>
+      console.log("WhatsApp client disconnected:", reason)
+    );
+  }
+
+  private async ensureClientInitialized(): Promise<void> {
     if (!this.client) {
-      console.log("Reconnecting...");
-      await this.initialize(); // Reinitialize if disconnected
+      console.log("Reinitializing WhatsApp client...");
+      await this.initialize();
     }
   }
 
   async getQRCode(): Promise<string> {
-    // this.removeOldSession();
-
     return new Promise((resolve, reject) => {
-      // Using the 'qr' event from whatsapp-web.js
-      this.client?.on("qr", (qr) => {
-        resolve(qr); // Return QR Code string
-      });
-
-      // If client is not ready or already authenticated
       if (!this.client) {
-        reject("Client is not ready");
+        return reject("Client is not ready");
       }
+
+      this.client.on("qr", (qr) => resolve(qr));
     });
   }
 
   async getConnectionStatus(): Promise<string> {
-    await this.reconnectClient(); // Ensure the client is connected before making the request
-    if (!this.client) return "disconnected";
-
-    // Check client connection state
-    const state = this.client.getState();
-    return state;
+    await this.ensureClientInitialized();
+    try {
+      return (await this.client?.getState()) ?? "disconnected";
+    } catch (err) {
+      console.error("Error fetching connection status:", err);
+      return "error";
+    }
   }
 
   async getAllGroups(): Promise<any[]> {
-    await this.reconnectClient(); // Ensure the client is connected before making the request
-    if (!this.client) throw new Error("Client not connected");
+    await this.ensureClientInitialized();
+
+    if (!this.client) {
+      throw new Error("Client not connected");
+    }
 
     const chats = await this.client.getChats();
     return chats.filter((chat) => chat.isGroup);
   }
 
   async sendMessageToGroup(groupId: string, message: string): Promise<string> {
-    await this.reconnectClient(); // Ensure the client is connected before sending the message
-    if (!this.client) throw new Error("Client not connected");
+    await this.ensureClientInitialized();
+
+    if (!this.client) {
+      throw new Error("Client not connected");
+    }
 
     await this.client.sendMessage(groupId, message);
     return "Message sent!";
