@@ -3,6 +3,7 @@ import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
   Browsers,
+  ConnectionState,
 } from "@whiskeysockets/baileys";
 import * as fs from "fs";
 import { Boom } from "@hapi/boom";
@@ -22,7 +23,7 @@ export const connectToWhatsApp = async () => {
   // Create a socket connection
   const conn = makeWASocket({
     auth: state,
-    printQRInTerminal: true,
+    // printQRInTerminal: true,
   });
 
   // Save credentials on update
@@ -50,17 +51,7 @@ export const connectToWhatsApp = async () => {
     }
   });
 
-  return new Promise((resolve, reject) => {
-    conn.ev.on("connection.update", (update) => {
-      if (update.connection === "open") {
-        resolve(conn); // Resolve the promise when connection is open
-      }
-    });
-
-    setTimeout(() => {
-      reject(new Error("Connection timed out"));
-    }, 30000); // Timeout after 30 seconds if no connection
-  });
+  return conn; // Return the client
 };
 
 export const generateQrCode = async () => {
@@ -71,8 +62,9 @@ export const generateQrCode = async () => {
   }
 
   return new Promise((resolve) => {
-    client.ev.on("connection.update", (update: any) => {
+    client.ev.on("connection.update", (update: Partial<ConnectionState>) => {
       const { qr, connection } = update;
+      console.log(qr);
       if (qr) {
         resolve(qr); // Return QR code as base64 string
       } else if (connection === "open") {
