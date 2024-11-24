@@ -1,0 +1,9 @@
+node_modules
+dist
+*.log
+.env
+Dockerfile
+docker-compose.yml
+tokens
+.git
+build
