@@ -62,5 +62,6 @@
   "prisma": {
     "schema": "src/prisma/schema.prisma",
     "seed": "ts-node src/prisma/seed.ts"
-  }
+  },
+  "packageManager": "pnpm@9.1.1"
 }
