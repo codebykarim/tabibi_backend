@@ -2,7 +2,7 @@
 FROM zenika/alpine-chrome:with-puppeteer
 
 # Set working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Switch to 'chrome' user for better security and permissions
 USER chrome

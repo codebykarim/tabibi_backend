@@ -9,10 +9,10 @@ class WhatsAppService {
     this.initialize();
   }
 
-  private sessionFolder = "/app/whatsapp/tokens"; // Docker path for tokens
+  private sessionFolder = "/whatsapp/tokens"; // Docker path for tokens
 
   private async initialize(): Promise<void> {
-    const sessionPath = "/app/whatsapp/tokens/whatsapp-session"; // Session folder
+    const sessionPath = "/whatsapp/tokens/whatsapp-session"; // Session folder
     const lockFile = `${sessionPath}/SingletonLock`;
 
     // Check and remove the SingletonLock file if it exists
