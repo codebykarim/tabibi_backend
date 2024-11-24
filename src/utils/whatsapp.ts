@@ -16,7 +16,9 @@ export const connectToWhatsApp = async () => {
   if (client) return client; // Return existing client if already connected
 
   // Initialize the multi-file authentication state
-  const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
+  const { state, saveCreds } = await useMultiFileAuthState(
+    "/whatsapp/auth_info_baileys"
+  );
 
   // Create a socket connection
   const conn = makeWASocket({
