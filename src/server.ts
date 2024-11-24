@@ -6,7 +6,7 @@ import pkg from "body-parser";
 import path from "path";
 const { urlencoded } = pkg;
 const { json } = pkg;
-
+import WhatsAppService from "./utils/whatsapp";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { ErrorMeta } from "./utils/logger";
@@ -63,6 +63,7 @@ const port = process.env.PORT ?? 3000;
 
 app.listen(port as any, "0.0.0.0", () => {
   initializeScheduledNotifications();
+  WhatsAppService.getConnectionStatus();
 
   console.log(`Server started on port: ${process.env.PORT}`);
 });

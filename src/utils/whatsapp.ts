@@ -8,8 +8,6 @@ class WhatsAppService {
     this.initialize();
   }
 
-  private sessionFolder = "/whatsapp/tokens"; // Docker path for tokens
-
   private async initialize(): Promise<void> {
     const sessionPath = "/whatsapp/tokens/whatsapp-session"; // Session folder
     const lockFile = `${sessionPath}/SingletonLock`;
@@ -41,10 +39,6 @@ class WhatsAppService {
     });
 
     // Event listeners for client
-    this.client.on("qr", (qr) => {
-      console.log("QR Code received:", qr);
-    });
-
     this.client.on("ready", () => {
       console.log("WhatsApp client is ready!");
     });
@@ -90,6 +84,7 @@ class WhatsAppService {
   }
 
   async getConnectionStatus(): Promise<string> {
+    await this.reconnectClient(); // Ensure the client is connected before making the request
     if (!this.client) return "disconnected";
 
     // Check client connection state
@@ -112,30 +107,6 @@ class WhatsAppService {
     await this.client.sendMessage(groupId, message);
     return "Message sent!";
   }
-
-  // private removeOldSession(): void {
-  //   const sessionPath = `${this.sessionFolder}`;
-  //   if (existsSync(sessionPath)) {
-  //     try {
-  //       rmSync(sessionPath, { recursive: true, force: true }); // Delete the old session file
-  //       console.log("Old session removed successfully.");
-  //     } catch (err) {
-  //       console.error("Error removing old session:", err);
-  //     }
-  //   } else {
-  //     console.log("No existing session to remove.");
-  //   }
-
-  //   // Ensure the token folder itself exists
-  //   if (!existsSync(sessionPath)) {
-  //     try {
-  //       mkdirSync(sessionPath, { recursive: true }); // Create token folder if missing
-  //       console.log("Created session folder.");
-  //     } catch (err) {
-  //       console.error("Error creating session folder:", err);
-  //     }
-  //   }
-  // }
 }
 
 export default new WhatsAppService();
