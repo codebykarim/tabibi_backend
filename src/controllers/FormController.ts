@@ -21,7 +21,6 @@ export const createAskDoctorForm = async (
 
   // Process uploaded files
   if (req.files) {
-    console.log(req.files);
     const media = (req.files as Express.Multer.File[])?.map((file) => {
       return {
         fileName: `${Date.now()}-${file.originalname}`,

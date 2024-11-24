@@ -13,6 +13,9 @@ COPY --chown=chrome:chrome package*.json ./
 # Install dependencies
 RUN npm install --frozen-lockfile
 
+# Create the token directory for Venom.js and set permissions
+RUN mkdir -p /usr/src/app/tokens && chmod -R 777 /usr/src/app/tokens
+
 # Copy the Prisma schema directory
 COPY --chown=chrome:chrome src/prisma ./src/prisma
 

@@ -1,4 +1,5 @@
 import { create, Whatsapp, Chat } from "venom-bot";
+import { unlinkSync, existsSync, rmdirSync, rmSync } from "fs";
 
 class WhatsAppService {
   private client: Whatsapp | null = null;
@@ -7,11 +8,14 @@ class WhatsAppService {
     this.initialize();
   }
 
+  private sessionFolder = "./tokens"; // Path to session tokens folder
+  private sessionName = "whatsapp-session";
+
   private async initialize(): Promise<void> {
     create(`whatsapp-session`, undefined, undefined, {
       headless: "new",
       folderNameToken: "tokens", // Persistent storage path
-      mkdirFolderToken: "/data",
+      mkdirFolderToken: "/usr/src/app/tokens", // Match the path created in the Dockerfile
       browserPathExecutable: "/usr/bin/chromium", // Pre-installed Chromium
       puppeteerOptions: {
         executablePath: "/usr/bin/chromium",
@@ -23,6 +27,7 @@ class WhatsAppService {
       ],
       disableSpins: true,
       disableWelcome: true,
+      logQR: false,
       autoClose: 0,
     })
       .then((client) => {
@@ -33,6 +38,8 @@ class WhatsAppService {
   }
 
   async getQRCode(): Promise<string> {
+    this.removeOldSession();
+
     return new Promise((resolve, reject) => {
       create(
         `whatsapp-session`,
@@ -43,7 +50,7 @@ class WhatsAppService {
         {
           headless: "new",
           folderNameToken: "tokens", // Persistent storage path
-          mkdirFolderToken: "/data",
+          mkdirFolderToken: "/usr/src/app/tokens", // Match the path created in the Dockerfile
           browserPathExecutable: "/usr/bin/chromium", // Pre-installed Chromium
           puppeteerOptions: {
             executablePath: "/usr/bin/chromium",
@@ -55,6 +62,7 @@ class WhatsAppService {
           ],
           disableSpins: true,
           disableWelcome: true,
+          logQR: false,
           autoClose: 0,
         }
       )
@@ -81,6 +89,20 @@ class WhatsAppService {
 
     await this.client.sendText(groupId, message);
     return "Message sent!";
+  }
+
+  private removeOldSession(): void {
+    const sessionPath = `${this.sessionFolder}`;
+    if (existsSync(sessionPath)) {
+      try {
+        rmSync(sessionPath, { recursive: true, force: true }); // Delete the old session file
+        console.log("Old session removed successfully.");
+      } catch (err) {
+        console.error("Error removing old session:", err);
+      }
+    } else {
+      console.log("No existing session to remove.");
+    }
   }
 }
 
