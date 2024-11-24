@@ -7,14 +7,11 @@ WORKDIR /usr/src/app
 # Switch to 'chrome' user for better security and permissions
 USER chrome
 
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Copy package.json and pnpm-lock.yaml (assuming you are using pnpm)
+# Copy package.json and package-lock.json to install dependencies
 COPY --chown=chrome:chrome package*.json ./
 
-# Install dependencies using pnpm
-RUN pnpm install --frozen-lockfile
+# Install dependencies
+RUN npm install --frozen-lockfile
 
 # Copy the Prisma schema directory
 COPY --chown=chrome:chrome src/prisma ./src/prisma
@@ -23,10 +20,10 @@ COPY --chown=chrome:chrome src/prisma ./src/prisma
 COPY --chown=chrome:chrome . .
 
 # Generate Prisma client
-RUN pnpx prisma generate
+RUN npx prisma generate
 
 # Build the TypeScript app
-RUN pnpm run build
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
@@ -36,4 +33,4 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]
