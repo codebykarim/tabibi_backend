@@ -64,7 +64,7 @@ const port = process.env.PORT ?? 3000;
 
 app.listen(port as any, "0.0.0.0", () => {
   initializeScheduledNotifications();
-  connectAndGetQrCode();
+  // connectAndGetQrCode();
 
   console.log(`Server started on port: ${process.env.PORT}`);
 });

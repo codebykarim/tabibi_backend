@@ -14,7 +14,7 @@ export const connectAndGetQrCode = async (): Promise<string> => {
         resolve(base64Qr);
       },
       undefined,
-      { autoClose: 0, logQR: true }
+      { autoClose: 1000, logQR: true }
     )
       .then((client) => {
         whatsappClient = client;
