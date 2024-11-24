@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 # Switch to 'chrome' user for better security and permissions
 USER chrome
 
+# Ensure that the 'chrome' user can access the /data directory
+RUN chmod -R 777 /data
+
 # Copy package.json and package-lock.json to install dependencies
 COPY --chown=chrome:chrome package*.json ./
 
