@@ -9,10 +9,10 @@ class WhatsAppService {
     this.initialize();
   }
 
-  private sessionFolder = "/usr/src/app/tokens"; // Docker path for tokens
+  private sessionFolder = "/data/tokens"; // Docker path for tokens
 
   private async initialize(): Promise<void> {
-    const sessionPath = "/usr/src/app/tokens/whatsapp-session"; // Session folder
+    const sessionPath = "/data/tokens/whatsapp-session"; // Session folder
     const lockFile = `${sessionPath}/SingletonLock`;
 
     // Check and remove the SingletonLock file if it exists
@@ -80,7 +80,6 @@ class WhatsAppService {
     return new Promise((resolve, reject) => {
       // Using the 'qr' event from whatsapp-web.js
       this.client?.on("qr", (qr) => {
-        qrcode.generate(qr, { small: true });
         resolve(qr); // Return QR Code string
       });
 
