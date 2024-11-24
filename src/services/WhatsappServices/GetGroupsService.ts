@@ -1,4 +1,3 @@
-import { Chat } from "venom-bot";
 import WhatsAppService from "../../utils/whatsapp";
 
 interface Response {
