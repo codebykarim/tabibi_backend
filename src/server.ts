@@ -61,9 +61,9 @@ app.get("/health", (req: Request, res: Response) => {
 
 const port = process.env.PORT ?? 3000;
 
-app.listen(port as any, "0.0.0.0", () => {
+app.listen(port as any, "0.0.0.0", async () => {
   initializeScheduledNotifications();
-  WhatsAppService.getConnectionStatus();
+  await WhatsAppService.getConnectionStatus();
 
   console.log(`Server started on port: ${process.env.PORT}`);
 });

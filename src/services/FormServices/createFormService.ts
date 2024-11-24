@@ -28,7 +28,7 @@ const CreateForm = async ({
       },
     });
 
-    await SendMessageWhatsapp(formData.userId!, "Love u from Tabibi");
+    await SendMessageWhatsapp(formData.userId!, `${Date.now()} form created`);
 
     return { form };
   } catch (error) {
