@@ -11,7 +11,6 @@ import AppError from "./errors/AppError";
 import routes from "./routes";
 import { ErrorMeta } from "./utils/logger";
 import { initializeScheduledNotifications } from "./utils/schedule";
-import { connectAndGetQrCode } from "./utils/whatsapp";
 // import { LogError, ErrorMeta } from "./utils/logger";
 
 const app = express();
@@ -64,7 +63,6 @@ const port = process.env.PORT ?? 3000;
 
 app.listen(port as any, "0.0.0.0", () => {
   initializeScheduledNotifications();
-  // connectAndGetQrCode();
 
   console.log(`Server started on port: ${process.env.PORT}`);
 });

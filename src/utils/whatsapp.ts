@@ -1,4 +1,4 @@
-import { create, Whatsapp, Message, SocketState, Chat } from "venom-bot";
+import { create, Whatsapp, Chat } from "venom-bot";
 
 class WhatsAppService {
   private client: Whatsapp | null = null;
@@ -10,7 +10,20 @@ class WhatsAppService {
   private async initialize(): Promise<void> {
     create(`whatsapp-session`, undefined, undefined, {
       headless: "new",
-      folderNameToken: "/data", // Persistent storage path
+      folderNameToken: "tokens", // Persistent storage path
+      mkdirFolderToken: "/data",
+      browserPathExecutable: "/usr/bin/google-chrome-stable",
+      puppeteerOptions: {
+        executablePath: "/usr/bin/google-chrome-stable",
+      },
+      browserArgs: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+      disableSpins: true,
+      disableWelcome: true,
+      autoClose: 0,
     })
       .then((client) => {
         this.client = client;
@@ -29,7 +42,20 @@ class WhatsAppService {
         undefined,
         {
           headless: "new",
-          folderNameToken: "/data", // Persistent storage path
+          folderNameToken: "tokens", // Persistent storage path
+          mkdirFolderToken: "/data",
+          browserPathExecutable: "/usr/bin/google-chrome-stable",
+          puppeteerOptions: {
+            executablePath: "/usr/bin/google-chrome-stable",
+          },
+          browserArgs: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+          ],
+          disableSpins: true,
+          disableWelcome: true,
+          autoClose: 0,
         }
       )
         .then(() => console.log("QR Code captured"))
