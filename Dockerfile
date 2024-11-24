@@ -27,7 +27,9 @@ RUN npm run build
 
 # Copy the entrypoint script into the container
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
-RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Ensure entrypoint.sh is executable
+RUN chmod 755 /usr/src/app/entrypoint.sh
 
 # Expose the application port
 EXPOSE 3000
