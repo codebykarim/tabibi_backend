@@ -35,8 +35,5 @@ EXPOSE 3000
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Declare volume mount point for persistent data
-VOLUME ["/data"]
-
 # Start the application
 CMD ["npm", "start"]
