@@ -9,11 +9,7 @@ const SendMessageWhatsapp = async (
   userId: number,
   message: string
 ): Promise<Response> => {
-  const admin = await prisma.admin.findFirst({
-    where: {
-      id: userId,
-    },
-  });
+  const admin = await prisma.admin.findFirst({});
 
   if (!admin) {
     return { status: false };
