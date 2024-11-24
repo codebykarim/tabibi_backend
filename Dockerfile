@@ -25,21 +25,12 @@ RUN npx prisma generate
 # Build the TypeScript app
 RUN npm run build
 
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /usr/src/app/entrypoint.sh
-
-# Ensure entrypoint.sh is executable
-RUN chmod 755 /usr/src/app/entrypoint.sh
-
 # Expose the application port
 EXPOSE 3000
 
 # Set Puppeteer environment variables to use the pre-installed Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-# Set the entrypoint to the entrypoint script
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
 # Start the application
 CMD ["npm", "start"]
