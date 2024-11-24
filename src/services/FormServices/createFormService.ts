@@ -1,7 +1,6 @@
 import { Form, FormType } from "@prisma/client";
 import prisma from "../../prisma";
 import AppError from "../../errors/AppError";
-import SendMessageWhatsapp from "../WhatsappServices/SendMessageWhatsapp";
 
 interface CreateFormArgs {
   type: FormType;
@@ -27,8 +26,6 @@ const CreateForm = async ({
         ...formData,
       },
     });
-
-    await SendMessageWhatsapp(formData.userId!, "form created");
 
     return { form };
   } catch (error) {

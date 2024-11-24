@@ -1,109 +1,138 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
-import { unlinkSync, existsSync } from "fs";
+import makeWASocket, {
+  BufferJSON,
+  useMultiFileAuthState,
+  DisconnectReason,
+  Browsers,
+} from "@whiskeysockets/baileys";
+import * as fs from "fs";
+import { Boom } from "@hapi/boom";
+import prisma from "../prisma";
+import AppError from "../errors/AppError";
 
-class WhatsAppService {
-  private client: Client | null = null;
-  private readonly sessionPath = "/whatsapp/tokens/whatsapp-session"; // Session folder
-  private readonly lockFile = `${this.sessionPath}/SingletonLock`;
+let client: any = null; // Store the single WhatsApp client
 
-  constructor() {
-    this.initialize();
-  }
+export const connectToWhatsApp = async () => {
+  if (client) return client; // Return existing client if already connected
 
-  private async initialize(): Promise<void> {
-    this.cleanUpLockFile();
-    this.createClient();
+  // Initialize the multi-file authentication state
+  const { state, saveCreds } = await useMultiFileAuthState(
+    "/whatsapp/auth_info_baileys"
+  );
 
-    try {
-      await this.client?.initialize();
-      console.log("WhatsApp initialized successfully!");
-    } catch (err) {
-      console.error("Error initializing WhatsApp client:", err);
+  // Create a socket connection
+  const conn = makeWASocket({
+    auth: state,
+    printQRInTerminal: true,
+  });
+
+  // Save credentials on update
+  conn.ev.on("creds.update", saveCreds);
+
+  // Handle connection updates
+  conn.ev.on("connection.update", (update) => {
+    const { connection, lastDisconnect } = update;
+    const status = (update.lastDisconnect?.error as Boom)?.output?.statusCode;
+
+    if (status == DisconnectReason.restartRequired) {
+      console.log("Restarting connection...");
+      connectToWhatsApp(); // Reconnect if required
     }
-  }
 
-  private cleanUpLockFile(): void {
-    if (existsSync(this.lockFile)) {
-      try {
-        unlinkSync(this.lockFile);
-        console.log("SingletonLock file removed successfully.");
-      } catch (err) {
-        console.error("Error removing SingletonLock file:", err);
+    // If disconnected, log the disconnect reason
+    if (lastDisconnect?.error) {
+      console.log("Disconnected:", lastDisconnect.error);
+    }
+
+    // When the connection opens
+    if (connection === "open") {
+      console.log("Opened connection to WhatsApp");
+      client = conn; // Store the client once the connection is open
+    }
+  });
+
+  return new Promise((resolve, reject) => {
+    conn.ev.on("connection.update", (update) => {
+      if (update.connection === "open") {
+        resolve(conn); // Resolve the promise when connection is open
       }
-    }
-  }
-
-  private createClient(): void {
-    this.client = new Client({
-      authStrategy: new LocalAuth({ clientId: "whatsapp-session" }),
-      puppeteer: {
-        headless: true,
-        // executablePath: "/usr/bin/chromium",
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-        ],
-      },
     });
 
-    this.client.on("ready", () => console.log("WhatsApp client is ready!"));
-    this.client.on("authenticated", () =>
-      console.log("WhatsApp authenticated!")
-    );
-    this.client.on("disconnected", (reason) =>
-      console.log("WhatsApp client disconnected:", reason)
-    );
+    setTimeout(() => {
+      reject(new Error("Connection timed out"));
+    }, 30000); // Timeout after 30 seconds if no connection
+  });
+};
+
+export const generateQrCode = async () => {
+  const client = await connectToWhatsApp();
+
+  if (!client) {
+    throw new AppError("Client not connected");
   }
 
-  private async ensureClientInitialized(): Promise<void> {
-    if (!this.client) {
-      console.log("Reinitializing WhatsApp client...");
-      await this.initialize();
-    }
-  }
-
-  async getQRCode(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!this.client) {
-        return reject("Client is not ready");
+  return new Promise((resolve) => {
+    client.ev.on("connection.update", (update: any) => {
+      const { qr, connection } = update;
+      if (qr) {
+        resolve(qr); // Return QR code as base64 string
+      } else if (connection === "open") {
+        console.log("Connection opened successfully.");
       }
-
-      this.client.on("qr", (qr) => resolve(qr));
     });
+  });
+};
+
+// Check connection status
+export const checkConnectionStatus = async () => {
+  const client = await connectToWhatsApp();
+
+  if (!client) {
+    throw new AppError("Client not connected");
   }
 
-  async getConnectionStatus(): Promise<string> {
-    await this.ensureClientInitialized();
-    try {
-      return (await this.client?.getState()) ?? "disconnected";
-    } catch (err) {
-      console.error("Error fetching connection status:", err);
-      return "error";
-    }
+  return client.user && client.user.id;
+};
+
+// Check if user is fully connected and can receive messages
+export const checkFullyConnection = async (userId: number) => {
+  const client = await connectToWhatsApp();
+  if (!client) {
+    throw new AppError("Client not connected");
   }
 
-  async getAllGroups(): Promise<any[]> {
-    await this.ensureClientInitialized();
+  const user = await prisma.admin.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  const groupId = user?.whatsappGroupId;
+  console.log("\n\n\n\n\n\n" + groupId + "\n\n\n\n\n\n" + client.user?.id);
+  return client.user && client.user.id && groupId;
+};
 
-    if (!this.client) {
-      throw new Error("Client not connected");
-    }
+// Fetch WhatsApp groups function
+export const fetchGroups = async () => {
+  const client = await connectToWhatsApp();
 
-    const chats = await this.client.getChats();
-    return chats.filter((chat) => chat.isGroup);
+  if (!client) {
+    throw new AppError("Client not connected");
   }
 
-  async sendMessageToGroup(groupId: string, message: string): Promise<string> {
-    await this.ensureClientInitialized();
+  const chats = await client.groupFetchAllParticipating();
+  return Object.values(chats);
+};
 
-    if (!this.client) {
-      throw new Error("Client not connected");
-    }
+// Send message to group function
+export const sendMessage = async (message: string, whatsappGroupId: string) => {
+  const client = await connectToWhatsApp();
 
-    await this.client.sendMessage(groupId, message);
-    return "Message sent!";
+  if (!client) {
+    throw new AppError("Client not connected");
   }
-}
 
-export default new WhatsAppService();
+  await client.sendMessage(whatsappGroupId, {
+    text: message,
+  });
+
+  return true;
+};

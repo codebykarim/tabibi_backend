@@ -7,6 +7,7 @@ import CheckConnectionStatusService from "../services/WhatsappServices/CheckConn
 import SaveGroupIdService from "../services/WhatsappServices/SaveGroupIdService";
 import GetGroupsService from "../services/WhatsappServices/GetGroupsService";
 import CheckFullConnectionStatusService from "../services/WhatsappServices/CheckFullConnectionStatusService";
+import SendMessageWhatsapp from "../services/WhatsappServices/SendMessageWhatsapp";
 
 export const getQrCode = async (
   req: Request,
@@ -59,6 +60,26 @@ export const saveGroupId = async (
     groupId,
     userId: Number(req.user.id),
   });
+
+  return controllerReturn(status, req, res);
+};
+
+export const sendMessage = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { message } =
+    body ??
+    (req.body as {
+      message?: string;
+    });
+
+  if (!message) {
+    throw new AppError("Please Provide Message and Group Id", 400);
+  }
+
+  const status = await SendMessageWhatsapp(message, Number(req.user.id));
 
   return controllerReturn(status, req, res);
 };

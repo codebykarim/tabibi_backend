@@ -131,3 +131,8 @@ model Village {
   createdAt DateTime @default(now())
   users     User[] // Added this line to establish the reverse relation
 }
+
+model Session {
+  id   Int    @id @unique @default(autoincrement())
+  data String @unique
+}

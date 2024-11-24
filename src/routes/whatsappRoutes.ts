@@ -32,6 +32,11 @@ const whatsappMethods: { [key: string]: MethodInfo } = {
     authFunction: isAuth,
     httpMethod: "put",
   },
+  "send-message": {
+    controllerFunction: WhatsappController.sendMessage,
+    authFunction: isAuth,
+    httpMethod: "post",
+  },
 };
 
 const mapedMethods = init(whatsappMethods);

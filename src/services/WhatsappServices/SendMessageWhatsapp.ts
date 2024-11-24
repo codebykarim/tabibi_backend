@@ -1,24 +1,27 @@
 import prisma from "../../prisma";
-import WhatsAppService from "../../utils/whatsapp";
+import { sendMessage } from "../../utils/whatsapp";
 
 interface Response {
   status: boolean;
 }
 
 const SendMessageWhatsapp = async (
-  userId: number,
-  message: string
+  message: string,
+  userId: number
 ): Promise<Response> => {
-  const admin = await prisma.admin.findFirst({});
+  const admin = await prisma.admin.findFirst({
+    where: {
+      id: userId,
+    },
+  });
 
   if (!admin) {
     return { status: false };
   }
 
-  const sent = await WhatsAppService.sendMessageToGroup(
-    admin.whatsappGroupId!,
-    message
-  );
+  const sent = await sendMessage(message, admin.whatsappGroupId!);
+
+  console.log(sent, "sent");
 
   return sent ? { status: true } : { status: false };
 };

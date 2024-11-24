@@ -49,7 +49,5 @@ Thumbs.db
 *.wmv
 
 
-tokens
-
-Dockerfile
-.dockerignore
+.wwebjs_auth
+.wwebjs_cache
