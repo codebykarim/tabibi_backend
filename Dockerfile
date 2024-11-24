@@ -7,17 +7,11 @@ WORKDIR /usr/src/app
 # Switch to 'chrome' user for better security and permissions
 USER chrome
 
-# Ensure that the 'chrome' user can access the /data directory
-RUN chmod -R 777 /data
-
 # Copy package.json and package-lock.json to install dependencies
 COPY --chown=chrome:chrome package*.json ./
 
 # Install dependencies
 RUN npm install --frozen-lockfile
-
-# Create the token directory for Venom.js and set permissions
-RUN mkdir -p /usr/src/app/tokens && chmod -R 777 /usr/src/app/tokens
 
 # Copy the Prisma schema directory
 COPY --chown=chrome:chrome src/prisma ./src/prisma
@@ -31,12 +25,19 @@ RUN npx prisma generate
 # Build the TypeScript app
 RUN npm run build
 
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
 # Expose the application port
 EXPOSE 3000
 
 # Set Puppeteer environment variables to use the pre-installed Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Set the entrypoint to the entrypoint script
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
 # Start the application
 CMD ["npm", "start"]
