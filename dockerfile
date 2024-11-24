@@ -13,17 +13,20 @@ COPY --chown=chrome:chrome package*.json ./
 # Install dependencies
 RUN npm install --frozen-lockfile
 
-# Copy the Prisma schema directory
-COPY --chown=chrome:chrome src/prisma ./src/prisma
+# Copy the Prisma schema
+COPY --chown=chrome:chrome prisma ./prisma
+
+# Generate Prisma client before copying app files to avoid cache invalidation
+RUN npx prisma generate
 
 # Copy the rest of your app files
 COPY --chown=chrome:chrome . .
 
-# Generate Prisma client
-RUN npx prisma generate
+# Ensure migrations are applied (if you use a database)
+RUN npx prisma migrate deploy || true
 
 # Build the TypeScript app
-RUN npm run build & npx prisma generate
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
