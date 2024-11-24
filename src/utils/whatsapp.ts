@@ -23,7 +23,7 @@ export const connectToWhatsApp = async () => {
   // Create a socket connection
   const conn = makeWASocket({
     auth: state,
-    // printQRInTerminal: true,
+    printQRInTerminal: true,
   });
 
   // Save credentials on update
