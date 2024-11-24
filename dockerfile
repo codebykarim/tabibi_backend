@@ -23,7 +23,7 @@ COPY --chown=chrome:chrome . .
 RUN npx prisma generate
 
 # Build the TypeScript app
-RUN npm run build
+RUN npm run build & npx prisma generate
 
 # Expose the application port
 EXPOSE 3000
