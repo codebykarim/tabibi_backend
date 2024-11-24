@@ -12,14 +12,14 @@ class WhatsAppService {
       headless: "new",
       folderNameToken: "tokens", // Persistent storage path
       mkdirFolderToken: "/data",
-      browserPathExecutable: "/usr/bin/google-chrome-stable",
+      browserPathExecutable: "/usr/bin/chromium", // Pre-installed Chromium
       puppeteerOptions: {
-        executablePath: "/usr/bin/google-chrome-stable",
+        executablePath: "/usr/bin/chromium",
       },
       browserArgs: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
+        "--no-sandbox", // Required for Docker
+        "--disable-setuid-sandbox", // Prevents permission errors
+        "--disable-dev-shm-usage", // Fixes shared memory crashes in Docker
       ],
       disableSpins: true,
       disableWelcome: true,
@@ -44,9 +44,9 @@ class WhatsAppService {
           headless: "new",
           folderNameToken: "tokens", // Persistent storage path
           mkdirFolderToken: "/data",
-          browserPathExecutable: "/usr/bin/google-chrome-stable",
+          browserPathExecutable: "/usr/bin/chromium", // Pre-installed Chromium
           puppeteerOptions: {
-            executablePath: "/usr/bin/google-chrome-stable",
+            executablePath: "/usr/bin/chromium",
           },
           browserArgs: [
             "--no-sandbox",
