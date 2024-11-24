@@ -16,9 +16,7 @@ export const connectToWhatsApp = async () => {
   if (client) return client; // Return existing client if already connected
 
   // Initialize the multi-file authentication state
-  const { state, saveCreds } = await useMultiFileAuthState(
-    "/whatsapp/auth_info_baileys"
-  );
+  const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
 
   // Create a socket connection
   const conn = makeWASocket({
@@ -51,7 +49,15 @@ export const connectToWhatsApp = async () => {
     }
   });
 
-  return conn; // Return the client
+  return new Promise((resolve, reject) => {
+    conn.ev.on("connection.update", (update) => {
+      return resolve(conn); // Resolve the promise when connection is open
+    });
+
+    setTimeout(() => {
+      reject(new Error("Connection timed out"));
+    }, 30000); // Timeout after 30 seconds if no connection
+  });
 };
 
 export const generateQrCode = async () => {
