@@ -37,6 +37,11 @@ const whatsappMethods: { [key: string]: MethodInfo } = {
     authFunction: isAuth,
     httpMethod: "post",
   },
+  "disconnect-whatsapp": {
+    controllerFunction: WhatsappController.disconnectWhatsApp,
+    authFunction: isAuth,
+    httpMethod: "post",
+  },
 };
 
 const mapedMethods = init(whatsappMethods);

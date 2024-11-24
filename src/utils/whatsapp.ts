@@ -136,3 +136,14 @@ export const sendMessage = async (message: string, whatsappGroupId: string) => {
 
   return true;
 };
+
+export const disconnectWhatsAppAndRemoveAuthInfo = async () => {
+  try {
+    await fs.promises.unlink("/whatsapp/auth_info_baileys");
+    console.log("Authentication info removed successfully.");
+    return true;
+  } catch (error) {
+    console.error("Error removing authentication info:", error);
+    return false;
+  }
+};

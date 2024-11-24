@@ -8,6 +8,7 @@ import SaveGroupIdService from "../services/WhatsappServices/SaveGroupIdService"
 import GetGroupsService from "../services/WhatsappServices/GetGroupsService";
 import CheckFullConnectionStatusService from "../services/WhatsappServices/CheckFullConnectionStatusService";
 import SendMessageWhatsapp from "../services/WhatsappServices/SendMessageWhatsapp";
+import { disconnectWhatsAppAndRemoveAuthInfo } from "../utils/whatsapp";
 
 export const getQrCode = async (
   req: Request,
@@ -80,6 +81,15 @@ export const sendMessage = async (
   }
 
   const status = await SendMessageWhatsapp(message, Number(req.user.id));
+
+  return controllerReturn(status, req, res);
+};
+
+export const disconnectWhatsApp = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const status = await disconnectWhatsAppAndRemoveAuthInfo();
 
   return controllerReturn(status, req, res);
 };
