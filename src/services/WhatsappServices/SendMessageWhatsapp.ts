@@ -1,5 +1,5 @@
 import prisma from "../../prisma";
-import { whatsappClient } from "../../utils/whatsapp";
+import WhatsAppService from "../../utils/whatsapp";
 
 interface Response {
   status: boolean;
@@ -14,17 +14,15 @@ const SendMessageWhatsapp = async (
       id: userId,
     },
   });
+
   if (!admin) {
     return { status: false };
   }
-  const sent = await whatsappClient
-    ?.sendText(admin?.whatsappGroupId!, message)
-    .then((result: any) => {
-      console.log("Result: ", result); //return object success
-    })
-    .catch((erro: any) => {
-      console.error("Error when sending: ", erro); //return object error
-    });
+
+  const sent = await WhatsAppService.sendMessageToGroup(
+    admin.whatsappGroupId!,
+    message
+  );
 
   return sent ? { status: true } : { status: false };
 };

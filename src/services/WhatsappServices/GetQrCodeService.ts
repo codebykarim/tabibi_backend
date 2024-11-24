@@ -1,11 +1,11 @@
-import { connectAndGetQrCode } from "../../utils/whatsapp";
+import WhatsAppService from "../../utils/whatsapp";
 
 interface Response {
   qr: string;
 }
 
 const GetQrCodeService = async (): Promise<Response> => {
-  const qr = await connectAndGetQrCode();
+  const qr = await WhatsAppService.getQRCode();
 
   return { qr };
 };

@@ -1,5 +1,5 @@
 import prisma from "../../prisma";
-import { whatsappClient } from "../../utils/whatsapp";
+import WhatsAppService from "../../utils/whatsapp";
 
 interface Response {
   status: boolean;
@@ -18,11 +18,7 @@ const CheckFullConnectionStatusService = async (
     return { status: false };
   }
 
-  if (!whatsappClient) {
-    return { status: false };
-  }
-
-  const connected = await whatsappClient?.isConnected();
+  const connected = await WhatsAppService.getConnectionStatus();
 
   return connected && admin.whatsappGroupId
     ? { status: true }

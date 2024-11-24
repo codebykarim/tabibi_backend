@@ -1,14 +1,11 @@
-import { whatsappClient } from "../../utils/whatsapp";
+import WhatsAppService from "../../utils/whatsapp";
 
 interface Response {
   status: boolean;
 }
 
 const CheckConnectionStatusService = async (): Promise<Response> => {
-  if (!whatsappClient) {
-    return { status: false };
-  }
-  const connected = await whatsappClient?.isConnected();
+  const connected = await WhatsAppService.getConnectionStatus();
 
   return connected ? { status: true } : { status: false };
 };
