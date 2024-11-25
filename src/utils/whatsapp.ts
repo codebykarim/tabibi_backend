@@ -152,7 +152,9 @@ export const disconnectWhatsAppAndRemoveAuthInfo = async (adminId: number) => {
         whatsappGroupId: null,
       },
     });
-    await fs.promises.rmdir("/whatsapp/auth_info_baileys", { recursive: true });
+    await fs.promises.rmdir(`/whatsapp/auth_info_baileys_${adminId}`, {
+      recursive: true,
+    });
     console.log("Authentication info removed successfully.");
     return true;
   } catch (error) {
