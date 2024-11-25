@@ -36,14 +36,14 @@ export const connectToWhatsApp = async (adminId: number) => {
       connectToWhatsApp(adminId); // Reconnect for the same user
     }
 
+    // If disconnected, log the disconnect reason
+    if (lastDisconnect?.error) {
+      console.log("Disconnected:", lastDisconnect.error);
+    }
+
     if (connection === "open") {
       console.log(`Connection opened for adminId: ${adminId}`);
       clients[adminId] = conn; // Store the client for the adminId
-    }
-
-    if (connection === "close") {
-      console.log(`Connection closed for adminId: ${adminId}`);
-      delete clients[adminId]; // Remove client on disconnect
     }
   });
 
