@@ -128,7 +128,8 @@ export const sendMessage = async (
   message: string,
   whatsappGroupId: string,
   adminId: number,
-  images?: string[]
+  images?: string[],
+  name?: string | undefined
 ) => {
   const client = await connectToWhatsApp(adminId);
 
@@ -143,7 +144,7 @@ export const sendMessage = async (
       try {
         await client.sendMessage(whatsappGroupId, {
           image: { url: imageUrl }, // Pass the image URL directly
-          caption: "Here is an image", // Optional caption for each image
+          caption: `related to ${name}`, // Optional caption for each image
         });
       } catch (error) {
         console.error(`Failed to send image: ${imageUrl}`, error);

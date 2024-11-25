@@ -8,7 +8,8 @@ interface Response {
 const SendMessageWhatsapp = async (
   message: string,
   adminId: number,
-  images?: string[]
+  images?: string[],
+  name?: string | undefined
 ): Promise<Response> => {
   const admin = await prisma.admin.findFirst({
     where: {
@@ -24,7 +25,8 @@ const SendMessageWhatsapp = async (
     message,
     admin.whatsappGroupId!,
     adminId,
-    images
+    images,
+    name
   );
 
   return sent ? { status: true } : { status: false };

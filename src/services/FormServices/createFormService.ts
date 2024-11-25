@@ -49,9 +49,9 @@ const CreateForm = async ({
       .map(([key, value]) => `*${key}*: ${value}`)
       .join("\n");
 
-    const message = `📝 *${form.user?.identitynumber} - ${form.user?.name}*\n\n${whatsappForm}`;
+    const message = `📝 *New Form ${form.user?.identitynumber} - ${form.user?.name}*\n\n${whatsappForm}`;
 
-    await SendMessageWhatsapp(message, admin.id, form.media);
+    await SendMessageWhatsapp(message, admin.id, form.media, form.user?.name);
 
     return { form };
   } catch (error) {
