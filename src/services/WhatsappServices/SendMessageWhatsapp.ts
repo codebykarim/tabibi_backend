@@ -21,8 +21,6 @@ const SendMessageWhatsapp = async (
 
   const sent = await sendMessage(message, admin.whatsappGroupId!, adminId);
 
-  console.log(sent, "sent");
-
   return sent ? { status: true } : { status: false };
 };
 

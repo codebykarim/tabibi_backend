@@ -211,7 +211,7 @@ export const getUser = async (
     (req.query as {
       id?: number;
     });
-  console.log(id);
+
   if (!id) {
     throw new AppError("MISSING_DETAILS");
   }

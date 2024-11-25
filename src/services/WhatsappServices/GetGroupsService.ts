@@ -6,7 +6,6 @@ interface Response {
 
 const GetGroupsService = async (adminId: number): Promise<Response> => {
   const chats = await fetchGroups(adminId);
-  console.log("chats", chats);
 
   return {
     chats,
