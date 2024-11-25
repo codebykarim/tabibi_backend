@@ -7,6 +7,7 @@ import CreateAdminService from "../services/AdminServices/CreateAdminService";
 import GetAdminService from "../services/AdminServices/GetAdminService";
 import VerifyUserService from "../services/AdminServices/VerifyUserService";
 import LoginAdminService from "../services/AdminServices/LoginAdminService";
+import GetRequestsService from "../services/AdminServices/GetRequestsService";
 
 type Adminfilter = {
   email?: string;
@@ -102,4 +103,14 @@ export const verifyUser = async (
   const admin = await VerifyUserService(id);
 
   return controllerReturn(admin, req, res);
+};
+
+export const getRequests = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const users = await GetRequestsService();
+
+  return controllerReturn(users, req, res);
 };

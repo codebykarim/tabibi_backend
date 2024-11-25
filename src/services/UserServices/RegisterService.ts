@@ -45,11 +45,7 @@ const RegisterService = async (
         email: `${identitynumber}@tabibi.com`,
         identitynumber: identitynumber,
         phone: phone,
-        village: {
-          connect: {
-            id: Number(villageId),
-          },
-        },
+        villageId: villageId,
         name,
       },
     })
@@ -60,6 +56,12 @@ const RegisterService = async (
 
   await supabase.auth.admin.updateUserById(data!.user!.id, {
     user_metadata: { id: user.id },
+  });
+
+  await prisma.request.create({
+    data: {
+      userId: user.id,
+    },
   });
 
   return {

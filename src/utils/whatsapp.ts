@@ -15,6 +15,10 @@ let client: any = null; // Store the single WhatsApp client
 export const connectToWhatsApp = async () => {
   if (client) return client; // Return existing client if already connected
 
+  if (process.env.WHATSAPP_DISABLED == "true") {
+    return;
+  }
+
   // Initialize the multi-file authentication state
   const { state, saveCreds } = await useMultiFileAuthState(
     "/whatsapp/auth_info_baileys"

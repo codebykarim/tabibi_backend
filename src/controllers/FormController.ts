@@ -5,6 +5,8 @@ import CreateForm from "../services/FormServices/createFormService";
 import { FormType } from "@prisma/client";
 
 import { uploadImages } from "../utils/uploadImages";
+import GetFormsService from "../services/FormServices/GetFormsService";
+import GetMyFormsService from "../services/FormServices/GetMyFormsService";
 
 export const createAskDoctorForm = async (
   req: Request,
@@ -173,4 +175,22 @@ export const createPapersForm = async (
   });
 
   return controllerReturn({ success: true }, req, res);
+};
+
+export const getForms = async (req: Request, res: Response, body?: any) => {
+  const forms = await GetFormsService();
+
+  return controllerReturn(forms, req, res);
+};
+
+export const getMyForms = async (req: Request, res: Response, body?: any) => {
+  const { id } =
+    body ??
+    (req.query as {
+      id?: string;
+    });
+
+  const forms = await GetMyFormsService(Number(id));
+
+  return controllerReturn(forms, req, res);
 };

@@ -25,6 +25,11 @@ const adminMethods: { [key: string]: MethodInfo } = {
     controllerFunction: AdminController.verifyUser,
     httpMethod: "post",
   },
+  "get-requests": {
+    authFunction: isAuth,
+    controllerFunction: AdminController.getRequests,
+    httpMethod: "get",
+  },
 };
 
 const mapedMethods = init(adminMethods);

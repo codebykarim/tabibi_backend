@@ -11,6 +11,9 @@ const GetUserService = async (id: number): Promise<Response> => {
     where: {
       id: id,
     },
+    include: {
+      village: true,
+    },
   });
 
   if (!user) {

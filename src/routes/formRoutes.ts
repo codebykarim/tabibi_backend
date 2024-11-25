@@ -27,6 +27,16 @@ const formMethods: { [key: string]: MethodInfo } = {
     controllerFunction: FormController.createPapersForm,
     httpMethod: "post",
   },
+  "get-forms": {
+    authFunction: isAuth,
+    controllerFunction: FormController.getForms,
+    httpMethod: "get",
+  },
+  "get-my-forms": {
+    authFunction: isAuth,
+    controllerFunction: FormController.getMyForms,
+    httpMethod: "get",
+  },
 };
 
 const mapedMethods = init(formMethods);

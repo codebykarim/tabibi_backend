@@ -7,39 +7,74 @@ import CreateScheduledNotificationService from "../services/NotificationServices
 import GetMyNotificationsService from "../services/NotificationServices/GetMyNotificationsService";
 import ReadOneNotification from "../services/NotificationServices/ReadOneNotification";
 import ReadAllMyNotifications from "../services/NotificationServices/ReadAllMyNotifications";
+import CreateNotificationService from "../services/NotificationServices/CreateNotificationService";
+import CreateMultipleNotificationService from "../services/NotificationServices/CreateMultipleNotificationService";
 
-// export const createNotification = async (
-//   req: Request,
-//   res: Response,
-//   body?: any
-// ): Promise<Response> => {
-//   const { title, content, bodyContent, type, userId } =
-//     body ??
-//     (req.body as {
-//       title?: string;
-//       content?: string;
-//       bodyContent?: any;
-//       type?: string;
-//       userId?: number;
-//     });
+export const createNotification = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { title, content, bodyContent, type, userId } =
+    body ??
+    (req.body as {
+      title?: string;
+      content?: string;
+      bodyContent?: any;
+      type?: string;
+      userId?: number;
+    });
 
-//   if (!title || !content || !bodyContent || !type || !userId) {
-//     throw new AppError(
-//       "Please Provide Title, Content, Body, Type, UserId and AdminId",
-//       400
-//     );
-//   }
+  if (!title || !content || !bodyContent || !type || !userId) {
+    throw new AppError(
+      "Please Provide Title, Content, Body, Type, UserId and AdminId",
+      400
+    );
+  }
 
-//   const notification = await CreateNotificationService(
-//     title,
-//     content,
-//     bodyContent,
-//     type,
-//     userId
-//   );
+  const notification = await CreateNotificationService(
+    title,
+    content,
+    bodyContent,
+    type,
+    userId
+  );
 
-//   return controllerReturn(notification, req, res);
-// };
+  return controllerReturn(notification, req, res);
+};
+
+export const createMultipleNoficiations = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { title, content, bodyContent, type, userIds } =
+    body ??
+    (req.body as {
+      title?: string;
+      content?: string;
+      bodyContent?: any;
+      type?: string;
+      userId?: number[];
+    });
+
+  if (!title || !content || !bodyContent || !type || !userIds) {
+    throw new AppError(
+      "Please Provide Title, Content, Body, Type, UserId and AdminId",
+      400
+    );
+  }
+
+  const notification = await CreateMultipleNotificationService(
+    title,
+    content,
+    bodyContent,
+    type,
+    userIds
+  );
+
+  return controllerReturn(notification, req, res);
+};
 
 export const createScheduledNotification = async (
   req: Request,

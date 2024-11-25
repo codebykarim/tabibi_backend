@@ -2,6 +2,7 @@ import { Router } from "express";
 import { MethodInfo } from "../interfaces";
 import * as VillageController from "../controllers/VillageController";
 import { init } from "../utils/methods";
+import isAuth from "../middleware/isAuth";
 
 const villageRoutes = Router();
 
@@ -9,6 +10,7 @@ const villageMethods: { [key: string]: MethodInfo } = {
   create: {
     controllerFunction: VillageController.createVillage,
     httpMethod: "post",
+    authFunction: isAuth,
   },
   getAll: {
     controllerFunction: VillageController.getAllVillages,
@@ -17,14 +19,17 @@ const villageMethods: { [key: string]: MethodInfo } = {
   get: {
     controllerFunction: VillageController.getVillage,
     httpMethod: "get",
+    authFunction: isAuth,
   },
   update: {
     controllerFunction: VillageController.updateVillage,
-    httpMethod: "post",
+    httpMethod: "put",
+    authFunction: isAuth,
   },
   delete: {
     controllerFunction: VillageController.deleteVillage,
     httpMethod: "delete",
+    authFunction: isAuth,
   },
 };
 

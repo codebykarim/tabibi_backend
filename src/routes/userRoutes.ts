@@ -28,9 +28,34 @@ const userMethods: { [key: string]: MethodInfo } = {
     httpMethod: "get",
     authFunction: isAuth,
   },
-  "update-me": {
-    controllerFunction: UserController.updateMe,
+  "add-fcm-token": {
+    controllerFunction: UserController.addFcmToken,
     httpMethod: "put",
+    authFunction: isAuth,
+  },
+  "create-user": {
+    controllerFunction: UserController.createUser,
+    httpMethod: "post",
+    authFunction: isAuth,
+  },
+  "update-user": {
+    controllerFunction: UserController.updateUser,
+    httpMethod: "put",
+    authFunction: isAuth,
+  },
+  "delete-user": {
+    controllerFunction: UserController.deleteUser,
+    httpMethod: "delete",
+    authFunction: isAuth,
+  },
+  "get-user": {
+    controllerFunction: UserController.getUser,
+    httpMethod: "get",
+    authFunction: isAuth,
+  },
+  "get-users": {
+    controllerFunction: UserController.getUsers,
+    httpMethod: "get",
     authFunction: isAuth,
   },
 };

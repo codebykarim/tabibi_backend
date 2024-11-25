@@ -26,6 +26,16 @@ const notificationMethods: { [key: string]: MethodInfo } = {
     controllerFunction: NotificationController.readAllMyNotifications,
     httpMethod: "put",
   },
+  "create-notification": {
+    authFunction: isAuth,
+    controllerFunction: NotificationController.createNotification,
+    httpMethod: "post",
+  },
+  "create-multiple-notifications": {
+    authFunction: isAuth,
+    controllerFunction: NotificationController.createMultipleNoficiations,
+    httpMethod: "post",
+  },
 };
 
 const mapedMethods = init(notificationMethods);

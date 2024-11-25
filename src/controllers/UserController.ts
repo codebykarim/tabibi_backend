@@ -9,7 +9,12 @@ import RegisterService from "../services/UserServices/RegisterService";
 import ChangePasswordService from "../services/UserServices/ChangePasswordService";
 import GetUserService from "../services/UserServices/GetUserService";
 import UpdateUserService from "../services/UserServices/UpdateUserService";
+import CreateUserService from "../services/UserServices/CreateUserService";
+import { Gender } from "@prisma/client";
+import DeleteUserService from "../services/UserServices/DeleteUserService";
+import GetUsersService from "../services/UserServices/GetUsersService";
 
+//  Mobile app
 export const checkLogin = async (
   req: Request,
   res: Response,
@@ -94,7 +99,7 @@ export const getMe = async (
   return controllerReturn(admin, req, res);
 };
 
-export const updateMe = async (
+export const addFcmToken = async (
   req: Request,
   res: Response,
   body?: any
@@ -104,7 +109,120 @@ export const updateMe = async (
     (req.body as {
       fcmToken?: string;
     });
-  const admin = await UpdateUserService(Number(req.user.id), fcmToken);
+  const user = await UpdateUserService({
+    data: {
+      id: Number(req.user.id),
+      fcmToken,
+    },
+  });
 
-  return controllerReturn(admin, req, res);
+  return controllerReturn(user, req, res);
+};
+
+// Dashboard
+export const createUser = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { identitynumber, name, phone, villageId, gender } =
+    body ??
+    (req.body as {
+      identitynumber?: string;
+      name?: string;
+      phone?: string;
+      villageId?: string;
+      gender?: Gender;
+    });
+
+  if (!identitynumber || !name || !villageId || !gender) {
+    throw new AppError("MISSING_DETAILS");
+  }
+
+  const user = await CreateUserService({
+    identitynumber,
+    name,
+    phone,
+    villageId: Number(villageId),
+    gender: gender,
+  });
+
+  return controllerReturn(user, req, res);
+};
+
+export const updateUser = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { id, name, identitynumber, phone, villageId, gender, isverified } =
+    body ??
+    (req.body as {
+      id?: number;
+      identitynumber?: string;
+      name?: string;
+      phone?: string;
+      villageId?: string;
+      gender?: Gender;
+    });
+
+  const user = await UpdateUserService({
+    data: {
+      id: Number(id),
+      name,
+      identitynumber,
+      phone,
+      villageId: villageId && Number(villageId),
+      gender: gender,
+      isverified: isverified,
+    },
+  });
+
+  return controllerReturn(user, req, res);
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { id } =
+    body ??
+    (req.body as {
+      id?: number;
+    });
+
+  if (!id) {
+    throw new AppError("MISSING_DETAILS");
+  }
+
+  const user = await DeleteUserService(Number(id));
+
+  return controllerReturn(user, req, res);
+};
+
+export const getUser = async (
+  req: Request,
+  res: Response,
+  body?: any
+): Promise<Response> => {
+  const { id } =
+    body ??
+    (req.query as {
+      id?: number;
+    });
+  console.log(id);
+  if (!id) {
+    throw new AppError("MISSING_DETAILS");
+  }
+
+  const user = await GetUserService(Number(id));
+
+  return controllerReturn(user, req, res);
+};
+
+export const getUsers = async (req: Request, res: Response) => {
+  const users = await GetUsersService();
+
+  return controllerReturn(users, req, res);
 };

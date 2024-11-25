@@ -1,5 +1,4 @@
 import { User } from "@prisma/client";
-import { supabase } from "../../utils/supabase";
 import AppError from "../../errors/AppError";
 import prisma from "../../prisma";
 
@@ -7,21 +6,29 @@ interface Response {
   user: User;
 }
 
-const UpdateUserService = async (
-  id: number,
-  fcmToken: string
-): Promise<Response> => {
-  const user = await prisma.user.update({
-    where: {
-      id: id,
-    },
-    data: {
-      fcmToken: fcmToken,
-    },
-  });
+const UpdateUserService = async ({
+  data,
+}: {
+  data: Partial<User>; // Allow partial updates
+}): Promise<Response> => {
+  const user = await prisma.user
+    .update({
+      where: {
+        id: data.id,
+      },
+      data,
+    })
+    .then(async (user) => {
+      await prisma.request.deleteMany({
+        where: {
+          userId: user.id,
+        },
+      });
+      return user;
+    });
 
   if (!user) {
-    throw new AppError("Sorry Invalid user", 406);
+    throw new AppError("Sorry, invalid user", 406);
   }
 
   return {
