@@ -89,7 +89,7 @@ export const disconnectWhatsApp = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const status = await disconnectWhatsAppAndRemoveAuthInfo();
+  const status = await disconnectWhatsAppAndRemoveAuthInfo(Number(req.user.id));
 
   return controllerReturn(status, req, res);
 };

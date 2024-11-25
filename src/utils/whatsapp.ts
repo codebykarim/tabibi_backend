@@ -137,8 +137,16 @@ export const sendMessage = async (message: string, whatsappGroupId: string) => {
   return true;
 };
 
-export const disconnectWhatsAppAndRemoveAuthInfo = async () => {
+export const disconnectWhatsAppAndRemoveAuthInfo = async (userId: number) => {
   try {
+    await prisma.admin.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        whatsappGroupId: null,
+      },
+    });
     await fs.promises.rmdir("/whatsapp/auth_info_baileys", { recursive: true });
     console.log("Authentication info removed successfully.");
     return true;
