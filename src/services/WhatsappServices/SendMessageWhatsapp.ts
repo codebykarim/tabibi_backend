@@ -7,11 +7,11 @@ interface Response {
 
 const SendMessageWhatsapp = async (
   message: string,
-  userId: number
+  adminId: number
 ): Promise<Response> => {
   const admin = await prisma.admin.findFirst({
     where: {
-      id: userId,
+      id: adminId,
     },
   });
 
@@ -19,7 +19,7 @@ const SendMessageWhatsapp = async (
     return { status: false };
   }
 
-  const sent = await sendMessage(message, admin.whatsappGroupId!);
+  const sent = await sendMessage(message, admin.whatsappGroupId!, adminId);
 
   console.log(sent, "sent");
 

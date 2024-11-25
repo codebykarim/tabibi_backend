@@ -4,8 +4,8 @@ interface Response {
   chats: any;
 }
 
-const GetGroupsService = async (): Promise<Response> => {
-  const chats = await fetchGroups();
+const GetGroupsService = async (adminId: number): Promise<Response> => {
+  const chats = await fetchGroups(adminId);
   console.log("chats", chats);
 
   return {

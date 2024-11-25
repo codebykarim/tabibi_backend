@@ -6,11 +6,11 @@ interface Response {
 }
 
 const CheckFullConnectionStatusService = async (
-  userId: number
+  adminId: number
 ): Promise<Response> => {
   const admin = await prisma.admin.findFirst({
     where: {
-      id: userId,
+      id: adminId,
     },
   });
 
@@ -18,7 +18,7 @@ const CheckFullConnectionStatusService = async (
     return { status: false };
   }
 
-  const connected = await checkFullyConnection(userId);
+  const connected = await checkFullyConnection(adminId);
 
   return connected && admin.whatsappGroupId
     ? { status: true }

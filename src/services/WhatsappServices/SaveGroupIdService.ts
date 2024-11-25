@@ -7,14 +7,14 @@ interface Response {
 
 const SaveGroupIdService = async ({
   groupId,
-  userId,
+  adminId,
 }: {
   groupId: string;
-  userId: number;
+  adminId: number;
 }): Promise<Response> => {
   const admin = await prisma.admin.update({
     where: {
-      id: userId,
+      id: adminId,
     },
     data: {
       whatsappGroupId: groupId,

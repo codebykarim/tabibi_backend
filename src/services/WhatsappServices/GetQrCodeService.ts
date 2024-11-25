@@ -4,8 +4,8 @@ interface Response {
   qr: any;
 }
 
-const GetQrCodeService = async (): Promise<Response> => {
-  const qr = await generateQrCode();
+const GetQrCodeService = async (adminId: number): Promise<Response> => {
+  const qr = await generateQrCode(adminId);
 
   return { qr };
 };

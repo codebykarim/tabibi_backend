@@ -12,12 +12,12 @@ import AppError from "../errors/AppError";
 
 let client: any = null; // Store the single WhatsApp client
 
-export const connectToWhatsApp = async () => {
+export const connectToWhatsApp = async (adminId: number) => {
   if (client) return client; // Return existing client if already connected
 
   // Initialize the multi-file authentication state
   const { state, saveCreds } = await useMultiFileAuthState(
-    "/whatsapp/auth_info_baileys"
+    `/whatsapp/auth_info_baileys_${adminId}`
   );
 
   // Create a socket connection
@@ -36,7 +36,7 @@ export const connectToWhatsApp = async () => {
 
     if (status == DisconnectReason.restartRequired) {
       console.log("Restarting connection...");
-      connectToWhatsApp(); // Reconnect if required
+      connectToWhatsApp(adminId); // Reconnect if required
     }
 
     // If disconnected, log the disconnect reason
@@ -62,8 +62,9 @@ export const connectToWhatsApp = async () => {
   });
 };
 
-export const generateQrCode = async () => {
-  const client = await connectToWhatsApp();
+// Generate QR code function
+export const generateQrCode = async (adminId: number) => {
+  const client = await connectToWhatsApp(adminId);
 
   if (!client) {
     throw new AppError("Client not connected");
@@ -83,8 +84,8 @@ export const generateQrCode = async () => {
 };
 
 // Check connection status
-export const checkConnectionStatus = async () => {
-  const client = await connectToWhatsApp();
+export const checkConnectionStatus = async (adminId: number) => {
+  const client = await connectToWhatsApp(adminId);
 
   if (!client) {
     throw new AppError("Client not connected");
@@ -94,15 +95,15 @@ export const checkConnectionStatus = async () => {
 };
 
 // Check if user is fully connected and can receive messages
-export const checkFullyConnection = async (userId: number) => {
-  const client = await connectToWhatsApp();
+export const checkFullyConnection = async (adminId: number) => {
+  const client = await connectToWhatsApp(adminId);
   if (!client) {
     throw new AppError("Client not connected");
   }
 
   const user = await prisma.admin.findUnique({
     where: {
-      id: userId,
+      id: adminId,
     },
   });
   const groupId = user?.whatsappGroupId;
@@ -111,8 +112,8 @@ export const checkFullyConnection = async (userId: number) => {
 };
 
 // Fetch WhatsApp groups function
-export const fetchGroups = async () => {
-  const client = await connectToWhatsApp();
+export const fetchGroups = async (adminId: number) => {
+  const client = await connectToWhatsApp(adminId);
 
   if (!client) {
     throw new AppError("Client not connected");
@@ -123,8 +124,12 @@ export const fetchGroups = async () => {
 };
 
 // Send message to group function
-export const sendMessage = async (message: string, whatsappGroupId: string) => {
-  const client = await connectToWhatsApp();
+export const sendMessage = async (
+  message: string,
+  whatsappGroupId: string,
+  adminId: number
+) => {
+  const client = await connectToWhatsApp(adminId);
 
   if (!client) {
     throw new AppError("Client not connected");
@@ -137,11 +142,11 @@ export const sendMessage = async (message: string, whatsappGroupId: string) => {
   return true;
 };
 
-export const disconnectWhatsAppAndRemoveAuthInfo = async (userId: number) => {
+export const disconnectWhatsAppAndRemoveAuthInfo = async (adminId: number) => {
   try {
     await prisma.admin.update({
       where: {
-        id: userId,
+        id: adminId,
       },
       data: {
         whatsappGroupId: null,

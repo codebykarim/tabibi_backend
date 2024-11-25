@@ -14,7 +14,7 @@ export const getQrCode = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const qrCode = await GetQrCodeService();
+  const qrCode = await GetQrCodeService(Number(req.user.id));
 
   return controllerReturn(qrCode, req, res);
 };
@@ -32,7 +32,7 @@ export const getStatus = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const status = await CheckConnectionStatusService();
+  const status = await CheckConnectionStatusService(Number(req.user.id));
 
   return controllerReturn(status, req, res);
 };
@@ -41,7 +41,7 @@ export const getGroups = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const groups = await GetGroupsService();
+  const groups = await GetGroupsService(Number(req.user.id));
 
   return controllerReturn(groups, req, res);
 };
@@ -59,7 +59,7 @@ export const saveGroupId = async (
 
   const status = await SaveGroupIdService({
     groupId,
-    userId: Number(req.user.id),
+    adminId: Number(req.user.id),
   });
 
   return controllerReturn(status, req, res);
