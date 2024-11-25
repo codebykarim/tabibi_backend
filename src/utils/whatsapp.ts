@@ -13,27 +13,30 @@ import AppError from "../errors/AppError";
 let clients: Record<number, any> = {}; // Store clients by adminId
 
 export const connectToWhatsApp = async (adminId: number) => {
-  // Return existing client if already connected
   if (clients[adminId]) return clients[adminId];
 
+  // Initialize the multi-file authentication state
   const { state, saveCreds } = await useMultiFileAuthState(
-    `/whatsapp/auth_info_baileys_${adminId}`
+    `auth_info_baileys_${adminId}`
   );
 
+  // Create a socket connection
   const conn = makeWASocket({
     auth: state,
-    printQRInTerminal: true,
+    // printQRInTerminal: true,
   });
 
+  // Save credentials on update
   conn.ev.on("creds.update", saveCreds);
 
+  // Handle connection updates
   conn.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect } = update;
-    const status = (lastDisconnect?.error as Boom)?.output?.statusCode;
+    const status = (update.lastDisconnect?.error as Boom)?.output?.statusCode;
 
-    if (status === DisconnectReason.restartRequired) {
+    if (status == DisconnectReason.restartRequired) {
       console.log("Restarting connection...");
-      connectToWhatsApp(adminId); // Reconnect for the same user
+      connectToWhatsApp(adminId); // Reconnect if required
     }
 
     // If disconnected, log the disconnect reason
@@ -41,20 +44,21 @@ export const connectToWhatsApp = async (adminId: number) => {
       console.log("Disconnected:", lastDisconnect.error);
     }
 
+    // When the connection opens
     if (connection === "open") {
-      console.log(`Connection opened for adminId: ${adminId}`);
+      console.log("Opened connection to WhatsApp");
       clients[adminId] = conn; // Store the client for the adminId
     }
   });
 
   return new Promise((resolve, reject) => {
     conn.ev.on("connection.update", (update) => {
-      if (update.connection === "open") resolve(conn);
+      return resolve(conn); // Resolve the promise when connection is open
     });
 
     setTimeout(() => {
       reject(new Error("Connection timed out"));
-    }, 30000);
+    }, 30000); // Timeout after 30 seconds if no connection
   });
 };
 
@@ -148,7 +152,7 @@ export const disconnectWhatsAppAndRemoveAuthInfo = async (adminId: number) => {
         whatsappGroupId: null,
       },
     });
-    await fs.promises.rmdir(`/whatsapp/auth_info_baileys_${adminId}`, {
+    await fs.promises.rmdir(`auth_info_baileys_${adminId}`, {
       recursive: true,
     });
     console.log("Authentication info removed successfully.");
