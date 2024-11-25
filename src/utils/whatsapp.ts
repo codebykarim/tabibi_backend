@@ -10,55 +10,51 @@ import { Boom } from "@hapi/boom";
 import prisma from "../prisma";
 import AppError from "../errors/AppError";
 
-let client: any = null; // Store the single WhatsApp client
+let clients: Record<number, any> = {}; // Store clients by adminId
 
 export const connectToWhatsApp = async (adminId: number) => {
-  if (client) return client; // Return existing client if already connected
+  // Return existing client if already connected
+  if (clients[adminId]) return clients[adminId];
 
-  // Initialize the multi-file authentication state
   const { state, saveCreds } = await useMultiFileAuthState(
     `/whatsapp/auth_info_baileys_${adminId}`
   );
 
-  // Create a socket connection
   const conn = makeWASocket({
     auth: state,
     printQRInTerminal: true,
   });
 
-  // Save credentials on update
   conn.ev.on("creds.update", saveCreds);
 
-  // Handle connection updates
   conn.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect } = update;
-    const status = (update.lastDisconnect?.error as Boom)?.output?.statusCode;
+    const status = (lastDisconnect?.error as Boom)?.output?.statusCode;
 
-    if (status == DisconnectReason.restartRequired) {
+    if (status === DisconnectReason.restartRequired) {
       console.log("Restarting connection...");
-      connectToWhatsApp(adminId); // Reconnect if required
+      connectToWhatsApp(adminId); // Reconnect for the same user
     }
 
-    // If disconnected, log the disconnect reason
-    if (lastDisconnect?.error) {
-      console.log("Disconnected:", lastDisconnect.error);
-    }
-
-    // When the connection opens
     if (connection === "open") {
-      console.log("Opened connection to WhatsApp");
-      client = conn; // Store the client once the connection is open
+      console.log(`Connection opened for adminId: ${adminId}`);
+      clients[adminId] = conn; // Store the client for the adminId
+    }
+
+    if (connection === "close") {
+      console.log(`Connection closed for adminId: ${adminId}`);
+      delete clients[adminId]; // Remove client on disconnect
     }
   });
 
   return new Promise((resolve, reject) => {
     conn.ev.on("connection.update", (update) => {
-      return resolve(conn); // Resolve the promise when connection is open
+      if (update.connection === "open") resolve(conn);
     });
 
     setTimeout(() => {
       reject(new Error("Connection timed out"));
-    }, 30000); // Timeout after 30 seconds if no connection
+    }, 30000);
   });
 };
 
