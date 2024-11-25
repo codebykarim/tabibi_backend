@@ -127,7 +127,8 @@ export const fetchGroups = async (adminId: number) => {
 export const sendMessage = async (
   message: string,
   whatsappGroupId: string,
-  adminId: number
+  adminId: number,
+  images?: string[]
 ) => {
   const client = await connectToWhatsApp(adminId);
 
@@ -135,9 +136,21 @@ export const sendMessage = async (
     throw new AppError("Client not connected");
   }
 
-  await client.sendMessage(whatsappGroupId, {
-    text: message,
-  });
+  await client.sendMessage(whatsappGroupId, { text: message });
+
+  if (images && images.length > 0) {
+    for (const imageUrl of images) {
+      try {
+        await client.sendMessage(whatsappGroupId, {
+          image: { url: imageUrl }, // Pass the image URL directly
+          caption: "Here is an image", // Optional caption for each image
+        });
+      } catch (error) {
+        console.error(`Failed to send image: ${imageUrl}`, error);
+        throw new AppError(`Failed to send image: ${imageUrl}`);
+      }
+    }
+  }
 
   return true;
 };

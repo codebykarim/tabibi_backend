@@ -39,14 +39,19 @@ const CreateForm = async ({
 
     const whatsappForm = Object.entries(formData)
       .filter(
-        ([key, value]) => value !== null && value !== "" && value !== undefined
+        ([key, value]) =>
+          value !== null &&
+          value !== "" &&
+          value !== undefined &&
+          key !== "media" &&
+          key !== "userId"
       )
       .map(([key, value]) => `*${key}*: ${value}`)
       .join("\n");
 
-    const message = `📝 *New Form Submission by ${form.user?.identitynumber} - ${form.user?.name}*\n\n${whatsappForm}`;
+    const message = `📝 *${form.user?.identitynumber} - ${form.user?.name}*\n\n${whatsappForm}`;
 
-    await SendMessageWhatsapp(message, admin.id);
+    await SendMessageWhatsapp(message, admin.id, form.media);
 
     return { form };
   } catch (error) {
