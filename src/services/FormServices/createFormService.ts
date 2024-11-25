@@ -26,6 +26,9 @@ const CreateForm = async ({
         type,
         ...formData,
       },
+      include: {
+        user: true,
+      },
     });
 
     const admin = await prisma.admin.findFirst({});
@@ -34,7 +37,16 @@ const CreateForm = async ({
       return { form };
     }
 
-    await SendMessageWhatsapp("Form Created", admin.id);
+    const whatsappForm = Object.entries(formData)
+      .filter(
+        ([key, value]) => value !== null && value !== "" && value !== undefined
+      )
+      .map(([key, value]) => `*${key}*: ${value}`)
+      .join("\n");
+
+    const message = `📝 *New Form Submission by ${form.user?.identitynumber} - ${form.user?.name}*\n\n${whatsappForm}`;
+
+    await SendMessageWhatsapp(message, admin.id);
 
     return { form };
   } catch (error) {
