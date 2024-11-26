@@ -7,6 +7,7 @@ import { FormType } from "@prisma/client";
 import { uploadImages } from "../utils/uploadImages";
 import GetFormsService from "../services/FormServices/GetFormsService";
 import GetMyFormsService from "../services/FormServices/GetMyFormsService";
+import DeleteFormService from "../services/FormServices/DeleteFormService";
 
 export const createAskDoctorForm = async (
   req: Request,
@@ -193,4 +194,20 @@ export const getMyForms = async (req: Request, res: Response, body?: any) => {
   const forms = await GetMyFormsService(Number(id));
 
   return controllerReturn(forms, req, res);
+};
+
+export const deleteForm = async (req: Request, res: Response, body?: any) => {
+  const { id } =
+    body ??
+    (req.body as {
+      id?: string;
+    });
+
+  if (!id) {
+    throw new AppError("Please Provide Id", 400);
+  }
+
+  const form = await DeleteFormService(Number(id));
+
+  return controllerReturn(form, req, res);
 };

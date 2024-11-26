@@ -37,6 +37,11 @@ const formMethods: { [key: string]: MethodInfo } = {
     controllerFunction: FormController.getMyForms,
     httpMethod: "get",
   },
+  "delete-form": {
+    authFunction: isAuth,
+    controllerFunction: FormController.deleteForm,
+    httpMethod: "delete",
+  },
 };
 
 const mapedMethods = init(formMethods);
