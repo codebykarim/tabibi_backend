@@ -25,7 +25,7 @@ export const createAskDoctorForm = async (
   // Process uploaded files
   if (req.files) {
     const media = (req.files as Express.Multer.File[])?.map((file) => {
-      if (file.size > 1000) {
+      if (file.size > 1048576) {
         throw new AppError("File size should be less than 1MB", 400);
       }
       return {
@@ -86,7 +86,7 @@ export const createMedicalCasesForm = async (
   // Process uploaded files
   if (req.files) {
     const media = (req.files as Express.Multer.File[])?.map((file) => {
-      if (file.size > 1000) {
+      if (file.size > 1048576) {
         throw new AppError("File size should be less than 1MB", 400);
       }
       return {
@@ -140,7 +140,7 @@ export const createPrescriptionForm = async (
   // Process uploaded files
   if (req.files) {
     const media = (req.files as Express.Multer.File[])?.map((file) => {
-      if (file.size > 1000) {
+      if (file.size > 1048576) {
         throw new AppError("File size should be less than 1MB", 400);
       }
       return {
