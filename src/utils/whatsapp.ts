@@ -148,7 +148,7 @@ export const sendMessage = async (
         });
       } catch (error) {
         console.error(`Failed to send image: ${imageUrl}`, error);
-        throw new AppError(`Failed to send image: ${imageUrl}`);
+        return;
       }
     }
   }

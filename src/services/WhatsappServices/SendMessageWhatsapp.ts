@@ -17,13 +17,13 @@ const SendMessageWhatsapp = async (
     },
   });
 
-  if (!admin) {
+  if (!admin || !admin.whatsappGroupId) {
     return { status: false };
   }
 
   const sent = await sendMessage(
     message,
-    admin.whatsappGroupId!,
+    admin.whatsappGroupId,
     adminId,
     images,
     name

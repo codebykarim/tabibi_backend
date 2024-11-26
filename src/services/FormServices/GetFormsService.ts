@@ -16,6 +16,9 @@ const GetFormsService = async (): Promise<Response> => {
     include: {
       user: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   if (!forms) {

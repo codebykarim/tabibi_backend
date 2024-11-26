@@ -45,7 +45,7 @@ export const login = async (req: Request, res: Response, body?: any) => {
 };
 
 export const register = async (req: Request, res: Response, body?: any) => {
-  const { identitynumber, name, phone, village } =
+  const { identitynumber, name, phone, village, gender } =
     body ??
     (req.body as {
       identitynumber?: string;
@@ -54,11 +54,17 @@ export const register = async (req: Request, res: Response, body?: any) => {
       village?: string;
     });
 
-  if (!identitynumber || !name || !phone || !village) {
+  if (!identitynumber || !name || !phone || !village || !gender) {
     throw new AppError("Plese Provide All the Details", 400);
   }
-  console.log(village);
-  const { user } = await RegisterService(identitynumber, name, phone, village);
+
+  const { user } = await RegisterService(
+    identitynumber,
+    name,
+    phone,
+    village,
+    gender
+  );
 
   return controllerReturn({ user }, req, res);
 };

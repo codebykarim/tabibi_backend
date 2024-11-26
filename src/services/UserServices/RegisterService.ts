@@ -1,7 +1,6 @@
 import { User } from "@prisma/client";
 import prisma from "../../prisma";
 import { supabase } from "../../utils/supabase";
-import { updateTokenExpiry } from "../../utils/tokenUtils";
 import AppError from "../../errors/AppError";
 
 interface Response {
@@ -12,7 +11,8 @@ const RegisterService = async (
   identitynumber: string,
   name: string,
   phone: string,
-  villageId: number
+  villageId: number,
+  gender: string
 ): Promise<Response> => {
   const userWithSameIdentity = await prisma.user.findFirst({
     where: {
@@ -47,6 +47,7 @@ const RegisterService = async (
         phone: phone,
         villageId: Number(villageId),
         name,
+        gender: gender == "ذكر" ? "MALE" : "FEMALE",
       },
     })
     .catch(async (e) => {
