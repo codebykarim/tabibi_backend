@@ -45,7 +45,7 @@ const RegisterService = async (
         email: `${identitynumber}@tabibi.com`,
         identitynumber: identitynumber,
         phone: phone,
-        villageId: villageId,
+        villageId: Number(villageId),
         name,
       },
     })

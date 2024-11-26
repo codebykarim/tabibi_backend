@@ -57,7 +57,7 @@ export const register = async (req: Request, res: Response, body?: any) => {
   if (!identitynumber || !name || !phone || !village) {
     throw new AppError("Plese Provide All the Details", 400);
   }
-
+  console.log(village);
   const { user } = await RegisterService(identitynumber, name, phone, village);
 
   return controllerReturn({ user }, req, res);
@@ -109,6 +109,7 @@ export const addFcmToken = async (
     (req.body as {
       fcmToken?: string;
     });
+  console.log(fcmToken);
   const user = await UpdateUserService({
     data: {
       id: Number(req.user.id),
