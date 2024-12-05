@@ -116,11 +116,14 @@ export const getMyNotifications = async (
   res: Response,
   body?: any
 ) => {
-  const { onlyUnread } = body ?? (req.query as { onlyUnread?: boolean });
+  const { onlyUnread, pageNumber } =
+    body ??
+    (req.query as { onlyUnread?: boolean; pageNumber?: string | number });
 
   const notifications = await GetMyNotificationsService(
     Number(req.user.id),
-    onlyUnread
+    onlyUnread,
+    pageNumber
   );
 
   return controllerReturn(notifications, req, res);
