@@ -14,6 +14,7 @@ const ChangePasswordService = async (
   oldPassword: string | undefined = process.env.DEFAULT_PASSWORD,
   newPassword: string
 ): Promise<Response> => {
+  console.log(oldPassword, newPassword, identitynumber);
   const alreadyChangedPassword = await prisma.user.findFirst({
     where: {
       identitynumber: identitynumber,
@@ -38,12 +39,15 @@ const ChangePasswordService = async (
     throw new AppError("Sorry Invalid user", 406);
   }
 
-  const { data, error } = await supabase.rpc("verify_user_password", {
-    password: oldPassword ?? process.env.DEFAULT_PASSWORD,
-    auth_id: user.authId,
+  const { data, error } = await supabase.rpc("changepassword", {
+    current_plain_password: oldPassword ?? process.env.DEFAULT_PASSWORD,
+    new_plain_password: newPassword,
+    current_id: user.authId,
   });
 
-  if (!data || error) {
+  console.log(data, error);
+
+  if (data == "incorrect" || error) {
     throw new AppError("Sorry Invalid password", 406);
   }
   await supabase.auth.admin.updateUserById(user.authId, {
@@ -51,7 +55,7 @@ const ChangePasswordService = async (
   });
 
   const { data: authData } = await supabase.auth.signInWithPassword({
-    email: `${identitynumber}@tabibi.com`,
+    email: `${identitynumber}@tabibbi.com`,
     password: newPassword,
   });
 

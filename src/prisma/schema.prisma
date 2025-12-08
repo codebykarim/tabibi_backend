@@ -9,6 +9,97 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model Admin {
+  id              Int            @id @unique @default(autoincrement())
+  authId          String         @unique
+  name            String
+  email           String         @unique
+  role            AdminRole      @default(DOCTOR)
+  phone           String?
+  fcmToken        String?
+  online          Boolean        @default(false)
+  profilePicture  String?
+  whatsappGroupId String?
+  notification    Notification[]
+  requests        Request[]
+}
+
+model User {
+  id              Int            @id @unique @default(autoincrement())
+  authId          String         @unique
+  identitynumber  String         @unique
+  name            String
+  email           String         @unique
+  phone           String         @unique
+  fcmToken        String?
+  online          Boolean        @default(false)
+  profilePicture  String?
+  isverified      Boolean        @default(false)
+  villageId       Int?
+  changedPassword Boolean        @default(false)
+  gender          Gender         @default(MALE)
+  forms           Form[]
+  notification    Notification[]
+  Request         Request[]
+  village         Village?       @relation(fields: [villageId], references: [id])
+}
+
+model Notification {
+  id        Int                @id @unique @default(autoincrement())
+  title     String
+  body      String
+  content   Json?
+  read      Boolean            @default(false)
+  type      NotificationType
+  userId    Int?
+  adminId   Int?
+  dateTime  DateTime?
+  status    NotificationStatus @default(PENDING)
+  createdAt DateTime           @default(now())
+  admin     Admin?             @relation(fields: [adminId], references: [id])
+  user      User?              @relation(fields: [userId], references: [id])
+}
+
+model Request {
+  id        Int      @id @unique @default(autoincrement())
+  userId    Int?
+  adminId   Int?
+  createdAt DateTime @default(now())
+  Admin     Admin?   @relation(fields: [adminId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Form {
+  id                   Int      @id @unique @default(autoincrement())
+  type                 FormType
+  symptoms             String?
+  startOfSymptoms      String?
+  intensityOfSymptoms  String?
+  otherSymptoms        String?
+  currentTemperature   String?
+  currentHeartBeat     String?
+  currentOxygen        String?
+  currentBloodPressure String?
+  medicine             String?
+  medicineReason       String?
+  medicineRenew        Boolean?
+  requiredPapers       String?
+  notes                String?
+  howToHelp            String?
+  media                String[]
+  userId               Int?
+  createdAt            DateTime @default(now())
+  user                 User?    @relation(fields: [userId], references: [id])
+}
+
+model Village {
+  id        Int      @id @unique @default(autoincrement())
+  name      String
+  location  String
+  createdAt DateTime @default(now())
+  users     User[]
+}
+
 enum AdminRole {
   ADMIN
   DOCTOR
@@ -35,99 +126,4 @@ enum FormType {
 enum NotificationStatus {
   PENDING
   SENT
-}
-
-model Admin {
-  id              Int            @id @unique @default(autoincrement())
-  authId          String         @unique
-  name            String
-  email           String         @unique
-  role            AdminRole      @default(DOCTOR)
-  phone           String?
-  fcmToken        String?
-  online          Boolean        @default(false)
-  profilePicture  String?
-  notification    Notification[]
-  requests        Request[]
-  whatsappGroupId String?
-}
-
-model User {
-  id              Int            @id @unique @default(autoincrement())
-  authId          String         @unique
-  identitynumber  String         @unique
-  name            String
-  email           String         @unique
-  phone           String         @unique
-  fcmToken        String?
-  online          Boolean        @default(false)
-  profilePicture  String?
-  isverified      Boolean        @default(false)
-  village         Village?       @relation(fields: [villageId], references: [id])
-  villageId       Int?
-  changedPassword Boolean        @default(false)
-  gender          Gender         @default(MALE)
-  notification    Notification[]
-  Request         Request[]
-  forms           Form[]
-}
-
-model Notification {
-  id        Int                @id @unique @default(autoincrement())
-  title     String
-  body      String
-  content   Json?
-  read      Boolean            @default(false)
-  type      NotificationType
-  user      User?              @relation(fields: [userId], references: [id])
-  userId    Int?
-  admin     Admin?             @relation(fields: [adminId], references: [id])
-  adminId   Int?
-  dateTime  DateTime?
-  status    NotificationStatus @default(PENDING)
-  createdAt DateTime           @default(now())
-}
-
-model Request {
-  id        Int      @id @unique @default(autoincrement())
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  Admin     Admin?   @relation(fields: [adminId], references: [id])
-  adminId   Int?
-  createdAt DateTime @default(now())
-}
-
-model Form {
-  id                   Int      @id @unique @default(autoincrement())
-  type                 FormType
-  symptoms             String? // MEDICAL_CASES
-  startOfSymptoms      String? // MEDICAL_CASES
-  intensityOfSymptoms  String? // MEDICAL_CASES
-  otherSymptoms        String? // MEDICAL_CASES
-  currentTemperature   String? // MEDICAL_CASES
-  currentHeartBeat     String? // MEDICAL_CASES
-  currentOxygen        String? // MEDICAL_CASES
-  currentBloodPressure String? // MEDICAL_CASES
-
-  medicine       String? // PRESCRIPTION
-  medicineReason String? // PRESCRIPTION
-  medicineRenew  Boolean? // PRESCRIPTION
-
-  requiredPapers String? // PAPERS
-  notes          String? // PAPERS
-
-  howToHelp String? // ASK_DOCTOR
-
-  media     String[] // All forms
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  createdAt DateTime @default(now())
-}
-
-model Village {
-  id        Int      @id @unique @default(autoincrement())
-  name      String
-  location  String
-  createdAt DateTime @default(now())
-  users     User[] // Added this line to establish the reverse relation
 }

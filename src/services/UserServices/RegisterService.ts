@@ -26,7 +26,7 @@ const RegisterService = async (
   }
 
   const { data, error } = await supabase.auth.signUp({
-    email: `${identitynumber}@tabibi.com`,
+    email: `${identitynumber}@tabibbi.com`,
     password: process.env.DEFAULT_PASSWORD!,
     options: {
       data: {
@@ -36,13 +36,16 @@ const RegisterService = async (
     },
   });
 
-  if (error) throw new AppError("Sorry something went wrong", 400);
+  if (error) {
+    console.log(error);
+    throw new AppError("Sorry something went wrong while registering", 400);
+  }
 
   const user: User = await prisma.user
     .create({
       data: {
         authId: data!.user!.id,
-        email: `${identitynumber}@tabibi.com`,
+        email: `${identitynumber}@tabibbi.com`,
         identitynumber: identitynumber,
         phone: phone,
         villageId: Number(villageId),

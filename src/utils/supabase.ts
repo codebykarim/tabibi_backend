@@ -5,8 +5,8 @@ export const supabase = createClient(
   process.env.SUBASECRET!,
   {
     auth: {
-      autoRefreshToken: true,
-      persistSession: true,
+      autoRefreshToken: false,
+      persistSession: false,
     },
   }
 );

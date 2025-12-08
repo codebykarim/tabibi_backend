@@ -33,7 +33,7 @@ const LoginService = async (
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: `${identitynumber}@tabibi.com`,
+    email: `${identitynumber}@tabibbi.com`,
     password: password,
   });
 

@@ -21,7 +21,7 @@ const CreateUserService = async ({
   gender: Gender;
 }): Promise<Response> => {
   const { data, error } = await supabase.auth.signUp({
-    email: `${identitynumber}@tabibi.com`,
+    email: `${identitynumber}@tabibbi.com`,
     password: process.env.DEFAULT_PASSWORD!,
     options: {
       data: {
@@ -31,14 +31,15 @@ const CreateUserService = async ({
     },
   });
 
-  if (error) throw new AppError("Sorry something went wrong", 400);
+  if (error)
+    throw new AppError("Sorry something went wrong while creating user", 400);
 
   const user = await prisma.user
     .create({
       data: {
         authId: data!.user!.id,
         identitynumber,
-        email: `${identitynumber}@tabibi.com`,
+        email: `${identitynumber}@tabibbi.com`,
         name,
         phone: phone ?? "",
         village: {
@@ -52,7 +53,7 @@ const CreateUserService = async ({
     })
     .catch(async (e) => {
       await supabase.auth.admin.deleteUser(data!.user!.id);
-      throw new AppError("Sorry Something went wrong");
+      throw new AppError("Sorry Something went wrong while creating user", 400);
     });
 
   return {

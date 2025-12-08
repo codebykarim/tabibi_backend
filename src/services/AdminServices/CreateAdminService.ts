@@ -53,7 +53,7 @@ const CreateAdminService = async ({
     },
   });
 
-  if (error) throw new AppError("ERR_INVALID_CREDENTIALS", 400);
+  if (error) throw new AppError(`${error.message}`, 400);
 
   const admin: Admin = await prisma.admin
     .create({
